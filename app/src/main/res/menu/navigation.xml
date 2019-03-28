@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/navigation_ride"
+          android:icon="@drawable/ic_route"
+          android:title="@string/title_ride" />
+
+    <item android:id="@+id/navigation_overview"
+          android:icon="@drawable/ic_book"
+          android:title="@string/title_overview" />
+
+    <item android:id="@+id/navigation_account"
+          android:icon="@drawable/ic_person"
+          android:title="@string/title_account" />
+</menu>
