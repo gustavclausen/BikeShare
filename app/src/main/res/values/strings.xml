@@ -3,4 +3,12 @@
     <string name="title_ride">Ride</string>
     <string name="title_overview">Overview</string>
     <string name="title_account">Account</string>
+    <string name="title_register_bike">Register a bike</string>
+    <string name="label_lock_id_register_bike">Lock id</string>
+    <string name="button_register_lock_id">Register lock</string>
+    <string name="label_photo_register_bike">Photo</string>
+    <string name="label_type_register_bike">Type</string>
+    <string name="label_price_register_bike">Price per hour</string>
+    <string name="currency_label">$</string>
+    <string name="button_register_button">Register bike</string>
 </resources>
