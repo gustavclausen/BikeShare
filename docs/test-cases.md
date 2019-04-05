@@ -4,10 +4,10 @@
 
 **Description:**
 
-[To be inserted]
+Register a bike.
 
 **Walkthrough:**
 
-| **Step** | **Result** |
-| -------- | ---------- |
-|          |            |
+| **Step**                                | **Result** |
+| --------------------------------------- | ---------- |
+| - Take a picture.<br />- Rotate screen. |            |

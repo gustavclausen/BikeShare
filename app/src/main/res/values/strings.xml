@@ -10,5 +10,6 @@
     <string name="label_type_register_bike">Type</string>
     <string name="label_price_register_bike">Price per hour</string>
     <string name="currency_label">$</string>
-    <string name="button_register_button">Register bike</string>
+    <string name="button_register_bike">Done</string>
+    <string name="camera_intent_error_message">No camera app found on device</string>
 </resources>
