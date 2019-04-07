@@ -3,4 +3,16 @@
     <string name="title_ride">Ride</string>
     <string name="title_overview">Overview</string>
     <string name="title_account">Account</string>
+    <string name="title_register_bike">Register a bike</string>
+    <string name="label_lock_id_register_bike">Lock id</string>
+    <string name="button_register_lock_id">Register lock</string>
+    <string name="label_photo_register_bike">Photo</string>
+    <string name="label_type_register_bike">Type</string>
+    <string name="label_price_register_bike">Price per hour</string>
+    <string name="currency_label">$</string>
+    <string name="button_register_bike">Done</string>
+    <string name="camera_intent_error_message">No camera app found on device</string>
+    <string name="empty_bike_type_view_text">No bike types found.</string>
+    <string name="no_lock_id_error_message">No lock registered.</string>
+    <string name="no_price_specified_error_message">No price specified.</string>
 </resources>
