@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.FileProvider
 import android.util.Log
 import android.view.*
+import android.view.View.VISIBLE
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.gustavclausen.bikeshare.R
@@ -21,11 +22,13 @@ import java.util.*
 class RegisterBikeFragment : Fragment() {
 
     private var mCurrentBikePhotoPath: String? = null
+    private var mLockId: UUID? = null
 
     companion object {
         private const val TAG = "RegisterBikeFragment"
         private const val REQUEST_IMAGE_CAPTURE = 1
         private const val THUMBNAIL_BIKE_PHOTO_PATH = "thumbnailBikePhotoPath"
+        private const val LOCK_ID = "lockId"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +37,7 @@ class RegisterBikeFragment : Fragment() {
 
         if (savedInstanceState != null) {
             mCurrentBikePhotoPath = savedInstanceState.getString(THUMBNAIL_BIKE_PHOTO_PATH)
+            mLockId = savedInstanceState.getSerializable(LOCK_ID) as UUID
         }
     }
 
@@ -48,7 +52,12 @@ class RegisterBikeFragment : Fragment() {
             dispatchTakePictureIntent()
         }
 
+        register_lock_id_button.setOnClickListener {
+            registerLockId()
+        }
+
         setBikeThumbnail()
+        displayLockId()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -61,6 +70,7 @@ class RegisterBikeFragment : Fragment() {
         super.onSaveInstanceState(outState)
 
         outState.putString(THUMBNAIL_BIKE_PHOTO_PATH, mCurrentBikePhotoPath)
+        outState.putSerializable(LOCK_ID, mLockId)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -75,6 +85,12 @@ class RegisterBikeFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK)
             setBikeThumbnail()
+    }
+
+    private fun registerLockId() {
+        mLockId = UUID.randomUUID() // Mocks Bluetooth pairing
+
+        displayLockId()
     }
 
     private fun dispatchTakePictureIntent() {
@@ -111,6 +127,15 @@ class RegisterBikeFragment : Fragment() {
     private fun setBikeThumbnail() {
         if (mCurrentBikePhotoPath != null)
             Glide.with(this).load(mCurrentBikePhotoPath).centerCrop().into(bike_photo_button)
+    }
+
+    private fun displayLockId() {
+        if (mLockId != null) {
+            lock_id_text.text = mLockId.toString()
+            lock_id_text.visibility = VISIBLE
+
+            register_lock_id_button.isEnabled = false
+        }
     }
 
     @Throws(IOException::class)

@@ -8,6 +8,6 @@ Register a bike.
 
 **Walkthrough:**
 
-| **Step**                                | **Result** |
-| --------------------------------------- | ---------- |
-| - Take a picture.<br />- Rotate screen. |            |
+| **Step**                                                     | **Result** |
+| ------------------------------------------------------------ | ---------- |
+| - Take a picture.<br />- Rotate screen.<br />- Generate id.<br />- Rotate screen. |            |
