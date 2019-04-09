@@ -20,7 +20,7 @@
             <TextView android:text="@string/label_photo_register_bike"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      style="@style/InputLabelStyle"/>
+                      style="@style/HeaderLabelStyle"/>
 
             <ImageButton android:id="@+id/bike_photo_button"
                          app:srcCompat="@drawable/ic_camera"
@@ -30,7 +30,6 @@
                          android:background="@drawable/default_border"
                          tools:ignore="ContentDescription"/>
         </LinearLayout>
-
 
         <LinearLayout android:id="@+id/lock_section"
                       android:layout_height="wrap_content"
@@ -44,7 +43,7 @@
             <TextView android:text="@string/label_lock_id_register_bike"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      style="@style/InputLabelStyle"/>
+                      style="@style/HeaderLabelStyle"/>
 
             <Button android:id="@+id/register_lock_id_button"
                     android:text="@string/button_register_lock_id"
@@ -61,7 +60,6 @@
                       android:visibility="gone"/>
         </LinearLayout>
 
-
         <LinearLayout android:id="@+id/type_section"
                       android:orientation="vertical"
                       android:layout_height="wrap_content"
@@ -74,7 +72,7 @@
             <TextView android:text="@string/label_type_register_bike"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      style="@style/InputLabelStyle"/>
+                      style="@style/HeaderLabelStyle"/>
 
             <Spinner android:id="@+id/bike_type_spinner"
                      android:layout_width="wrap_content"
@@ -88,7 +86,6 @@
                       android:text="@string/empty_bike_type_view_text"/>
         </LinearLayout>
 
-
         <LinearLayout android:id="@+id/price_section"
                       android:layout_height="wrap_content"
                       android:layout_width="match_parent"
@@ -101,7 +98,7 @@
             <TextView android:text="@string/label_price_register_bike"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      style="@style/InputLabelStyle"/>
+                      style="@style/HeaderLabelStyle"/>
 
             <LinearLayout android:layout_width="match_parent"
                           android:layout_height="wrap_content"

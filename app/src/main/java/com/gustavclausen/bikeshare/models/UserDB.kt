@@ -25,4 +25,18 @@ class UserDB private constructor() {
 
     fun getUser(userId: String): User? =
         mRealm.where(User::class.java).equalTo("id", userId).findFirst()
+
+    fun addToBalance(userId: String, amount: Double) {
+        mRealm.executeTransaction {
+            val user = getUser(userId)
+            user!!.accountBalance += amount
+        }
+    }
+
+    fun substractFromBalance(userId: String, amount: Double) {
+        mRealm.executeTransaction {
+            val user = getUser(userId)
+            user!!.accountBalance -= amount
+        }
+    }
 }

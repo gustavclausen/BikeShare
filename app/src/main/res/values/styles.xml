@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -12,10 +11,9 @@
         <item name="colorPrimary">@color/colorAccent</item>
     </style>
 
-    <style name="InputLabelStyle">
+    <style name="HeaderLabelStyle">
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-black</item>
     </style>
-
 </resources>
