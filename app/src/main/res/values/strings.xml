@@ -15,4 +15,9 @@
     <string name="empty_bike_type_view_text">No bike types found.</string>
     <string name="no_lock_id_error_message">No lock registered.</string>
     <string name="no_price_specified_error_message">No price specified.</string>
+    <string name="add_balance_button_text">Add to balance</string>
+    <string name="account_balance_text">$ %1$.2f</string>
+    <string name="rides_section_label">Rides</string>
+    <string name="bikes_section_label">Bikes</string>
+    <string name="add_bike_button_text">Add bike</string>
 </resources>

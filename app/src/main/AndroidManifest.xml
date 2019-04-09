@@ -13,7 +13,9 @@
                  android:supportsRtl="true"
                  android:theme="@style/AppTheme"
                  tools:ignore="AllowBackup">
-        <activity android:name=".activities.BikeShareActivity">
+
+        <activity android:name=".activities.BikeShareActivity"
+                  android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <action android:name="android.intent.action.VIEW"/>
@@ -21,7 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activities.RegisterBikeActivity"/>
+
+        <activity android:name=".activities.RegisterBikeActivity"
+                  android:parentActivityName=".activities.BikeShareActivity"/>
 
         <provider android:authorities="com.gustavclausen.bikeshare.fileprovider"
                   android:name="android.support.v4.content.FileProvider"
