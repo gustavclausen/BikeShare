@@ -20,4 +20,18 @@
     <string name="rides_section_label">Rides</string>
     <string name="bikes_section_label">Bikes</string>
     <string name="add_bike_button_text">Add bike</string>
+
+    <!-- Permissions -->
+    <string name="permission_rationale_location">
+        Access to the location service, which shows your current location on the map, is required.
+    </string>
+    <string name="location_permission_denied">
+        BikeShare requires location permission to function properly.
+        Please try again and grant access to use the location.\n
+        If the permission has been permanently denied, it can be enabled from the
+        System Settings &gt; Apps &gt; \'BikeShare\'.
+    </string>
+    <string name="permission_required_toast">
+        Location permission is required for the map to display your location.
+    </string>
 </resources>
