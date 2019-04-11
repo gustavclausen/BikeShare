@@ -5,10 +5,8 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
@@ -22,7 +20,10 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.helpers.MapStateManager
 
-// Source: https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/main/java/com/example/mapdemo (accessed 2019-04-10)
+/*
+ * Inspiration source (accessed 2019-04-10):
+ * https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/main/java/com/example/mapdemo
+ */
 class RideFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
@@ -53,11 +54,9 @@ class RideFragment : Fragment(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
 
-        if (mPermissionDenied) {
-            // Permission was not granted, display error dialog
+        // Permission was not granted, display error dialog
+        if (mPermissionDenied)
             PermissionDeniedDialog.newInstance(true).show(childFragmentManager, "dialog")
-            mPermissionDenied = false
-        }
     }
 
     override fun onPause() {
@@ -91,28 +90,27 @@ class RideFragment : Fragment(), OnMapReadyCallback {
         if (isPermissionGranted(permissions, grantResults, ACCESS_FINE_LOCATION))
             enableLocation()
         else
-            // Display the missing permission error dialog when the fragments resume
+            // Display the missing permission error dialog when this fragment resumes
             mPermissionDenied = true
     }
 
     private fun isPermissionGranted(grantPermissions: Array<String>, grantResults: IntArray, permission: String): Boolean {
         grantPermissions.indices.forEach { i ->
-            if (permission == grantPermissions[i])
-                return grantResults[i] == PackageManager.PERMISSION_GRANTED
+            if (permission == grantPermissions[i]) return grantResults[i] == PackageManager.PERMISSION_GRANTED
         }
 
         return false
     }
 
     private fun requestPermission(requestId: Int, permission: String, finishActivity: Boolean) {
-        if (shouldShowRequestPermissionRationale(permission)) {
+        if (shouldShowRequestPermissionRationale(permission))
             // Display a dialog with rationale
             RationaleDialog.newInstance(requestId, finishActivity).show(childFragmentManager, "dialog")
-        } else {
-            // Location permission has not been granted yet, request it.
+        else
+            // Location permission has not been granted yet, request it
             requestPermissions(arrayOf(permission), requestId)
-        }
     }
+
 
     class RationaleDialog : DialogFragment() {
 
@@ -141,12 +139,8 @@ class RideFragment : Fragment(), OnMapReadyCallback {
             return AlertDialog.Builder(activity!!)
                 .setMessage(R.string.permission_rationale_location)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
-                    // After click on OK, request the permission.
-                    ActivityCompat.requestPermissions(
-                        activity!!,
-                        arrayOf(ACCESS_FINE_LOCATION),
-                        requestCode
-                    )
+                    // After click on OK, request the permission
+                    parentFragment?.requestPermissions(arrayOf(ACCESS_FINE_LOCATION), requestCode)
                     // Do not finish the Activity while requesting permission
                     mFinishActivity = false
                 }
@@ -159,10 +153,11 @@ class RideFragment : Fragment(), OnMapReadyCallback {
 
             if (mFinishActivity) {
                 Toast.makeText(activity, R.string.permission_required_toast, Toast.LENGTH_SHORT).show()
-                activity!!.finish()
+                activity?.finish()
             }
         }
     }
+
 
     class PermissionDeniedDialog : DialogFragment() {
 
@@ -196,7 +191,7 @@ class RideFragment : Fragment(), OnMapReadyCallback {
 
             if (mFinishActivity) {
                 Toast.makeText(activity, R.string.permission_required_toast, Toast.LENGTH_SHORT).show()
-                activity!!.finish()
+                activity?.finish()
             }
         }
     }
