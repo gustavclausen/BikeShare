@@ -12,6 +12,7 @@ import com.gustavclausen.bikeshare.BikeShareApplication
 
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.activities.RegisterBikeActivity
+import com.gustavclausen.bikeshare.models.BikeDB
 import com.gustavclausen.bikeshare.models.UserDB
 import kotlinx.android.synthetic.main.fragment_account.*
 

@@ -1,6 +1,7 @@
 package com.gustavclausen.bikeshare.fragments
 
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
@@ -14,8 +15,11 @@ import android.view.View.VISIBLE
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
-import com.gustavclausen.bikeshare.models.BikesDB
+import com.gustavclausen.bikeshare.models.BikeDB
+import com.gustavclausen.bikeshare.models.Coordinate
+import com.gustavclausen.bikeshare.models.UserDB
 import kotlinx.android.synthetic.main.fragment_register_bike.*
 import java.io.File
 import java.io.IOException
@@ -24,7 +28,7 @@ import java.util.*
 
 class RegisterBikeFragment : Fragment() {
 
-    private val bikesDB = BikesDB.get()
+    private val bikesDB = BikeDB.get()
 
     private var mCurrentBikePhotoPath: String? = null
     private var mLockId: UUID? = null
@@ -178,7 +182,20 @@ class RegisterBikeFragment : Fragment() {
             }
         }
 
-        // TODO: Save bike
+        val userPreferences = context!!.getSharedPreferences(BikeShareApplication.PREF_USER_FILE, Context.MODE_PRIVATE)
+        val registeredUserId = userPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
+
+        // Save bike to DB
+        BikeDB.get().addBike(
+            lockId = mLockId.toString(),
+            type = bike_type_spinner.selectedItem.toString(),
+            priceHour = price_input.text.toString().toInt(),
+            picture = File(mCurrentBikePhotoPath).readBytes(), // TODO: Compress image and delete image from local storage
+            owner = UserDB.get().getUser(registeredUserId)!!,
+            lastKnownPosition = Coordinate(0.0, 0.0)
+        )
+
+        activity!!.finish() // Close activity after submission
     }
 
     private fun makeToast(stringResourceId: Int) {

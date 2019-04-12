@@ -4,6 +4,7 @@ import io.realm.Realm
 import java.util.*
 
 class UserDB private constructor() {
+
     private val mRealm = Realm.getDefaultInstance()!!
 
     companion object {

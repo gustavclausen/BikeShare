@@ -26,7 +26,7 @@ import com.gustavclausen.bikeshare.helpers.MapStateManager
  */
 class RideFragment : Fragment(), OnMapReadyCallback {
 
-    private lateinit var mMap: GoogleMap
+    private var mMap: GoogleMap? = null
     private var mPermissionDenied: Boolean = false
 
     companion object {
@@ -61,18 +61,19 @@ class RideFragment : Fragment(), OnMapReadyCallback {
 
     override fun onPause() {
         super.onPause()
-        MapStateManager.saveMapState(mMap, context!!)
+
+        if (mMap != null) MapStateManager.saveMapState(mMap!!, context!!)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.setMaxZoomPreference(25.0f)
+        mMap!!.setMaxZoomPreference(25.0f)
 
         enableLocation()
 
         val lastPosition = MapStateManager.getSavedMapState(context!!)
         val update = CameraUpdateFactory.newCameraPosition(lastPosition)
-        mMap.moveCamera(update)
+        mMap?.moveCamera(update)
     }
 
     private fun enableLocation() {
@@ -81,7 +82,7 @@ class RideFragment : Fragment(), OnMapReadyCallback {
             requestPermission(LOCATION_PERMISSION_REQUEST_CODE, ACCESS_FINE_LOCATION, finishActivity = true)
         else
             // Access to the location has been granted to the app
-            mMap.isMyLocationEnabled = true
+            mMap?.isMyLocationEnabled = true
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
