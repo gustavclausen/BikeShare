@@ -4,6 +4,8 @@
     <string name="title_ride">Ride</string>
     <string name="title_overview">Overview</string>
     <string name="title_account">Account</string>
+    <string name="title_bikes_overview">Bikes</string>
+    <string name="title_rides_overview">Rides</string>
     <string name="title_register_bike">Register a bike</string>
     <string name="label_lock_id_register_bike">Lock id</string>
     <string name="button_register_lock_id">Register lock</string>
