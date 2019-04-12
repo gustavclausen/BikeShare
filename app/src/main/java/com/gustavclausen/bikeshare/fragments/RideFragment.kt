@@ -1,6 +1,7 @@
 package com.gustavclausen.bikeshare.fragments
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -8,6 +9,9 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -23,8 +27,8 @@ import com.gustavclausen.bikeshare.utils.MapStateManager
  */
 class RideFragment : Fragment(), OnMapReadyCallback {
 
-    private var mMap: GoogleMap? = null
-    private var mPermissionDenied: Boolean = false
+    private lateinit var mMap: GoogleMap
+    private var mLocationPermissionDenied: Boolean = false
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -52,35 +56,37 @@ class RideFragment : Fragment(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
 
-        // Permission was not granted, display error dialog
-        if (mPermissionDenied)
+        if (mLocationPermissionDenied) {
+            // Location permission was not granted, display error dialog
             InfoDialog.newInstance(
                 dialogText = getString(R.string.location_permission_denied),
                 finishActivity = true,
                 finishActivityToastText = getString(R.string.permission_required_toast)
             ).show(childFragmentManager, "dialog")
+        }
     }
 
     override fun onPause() {
         super.onPause()
 
-        if (mMap != null) MapStateManager.saveMapState(mMap!!, context!!)
+        if (::mMap.isInitialized)
+            MapStateManager.saveMapState(mMap, context!!)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap!!.setMaxZoomPreference(25.0f)
+        mMap.setMaxZoomPreference(25.0f)
 
         enableLocation()
 
         val lastPosition = MapStateManager.getSavedMapState(context!!)
         val update = CameraUpdateFactory.newCameraPosition(lastPosition)
-        mMap?.moveCamera(update)
+        mMap.moveCamera(update)
     }
 
     private fun enableLocation() {
-        if (ContextCompat.checkSelfPermission(context!!, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            // Permission to access the location is missing
+        if (ContextCompat.checkSelfPermission(context!!, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Location permission to access the location is missing
             PermissionUtils.requestPermission(
                 permission = ACCESS_FINE_LOCATION,
                 requestId = LOCATION_PERMISSION_REQUEST_CODE,
@@ -89,9 +95,38 @@ class RideFragment : Fragment(), OnMapReadyCallback {
                 dismissText = getString(R.string.permission_required_toast),
                 fragment = this
             )
-        else
-            // Access to the location has been granted to the app
-            mMap?.isMyLocationEnabled = true
+        } else {
+            /*
+             * Access to the location has been granted to the app.
+             * Now check if location service is available, and start location on map if it is
+             */
+            checkLocation()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun checkLocation() {
+        val locationRequest = LocationRequest()
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.numUpdates = 1 // Only request once
+
+        // Check whether location settings on device are satisfied
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(locationRequest)
+        val locationSettingsRequest = builder.build()
+
+        val settingsClient = LocationServices.getSettingsClient(context!!)
+        settingsClient.checkLocationSettings(locationSettingsRequest).addOnSuccessListener {
+            // Location service is enabled, thus enable location on map
+            mMap.isMyLocationEnabled = true
+        }.addOnFailureListener {
+            // Location service is not available, show error dialog and quit Activity afterwards
+            InfoDialog.newInstance(
+                dialogText = getString(R.string.location_service_error),
+                finishActivity = true,
+                finishActivityToastText = getString(R.string.location_service_required_toast)
+            ).show(childFragmentManager, "dialog")
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -100,7 +135,7 @@ class RideFragment : Fragment(), OnMapReadyCallback {
         if (PermissionUtils.isPermissionGranted(permissions, grantResults, ACCESS_FINE_LOCATION))
             enableLocation()
         else
-            // To display the missing permission error dialog when this fragment resumes
-            mPermissionDenied = true
+            // Set variable to display the missing permission error dialog when this fragment resumes
+            mLocationPermissionDenied = true
     }
 }
