@@ -1,4 +1,4 @@
-package com.gustavclausen.bikeshare.helpers
+package com.gustavclausen.bikeshare.utils
 
 import android.content.Context
 import com.google.android.gms.maps.GoogleMap
