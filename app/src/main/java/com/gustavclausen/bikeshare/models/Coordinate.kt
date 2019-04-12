@@ -1,3 +1,5 @@
 package com.gustavclausen.bikeshare.models
 
-data class Coordinate(val lat: Double, val long: Double)
+import java.io.Serializable
+
+data class Coordinate(val lat: Double, val long: Double): Serializable

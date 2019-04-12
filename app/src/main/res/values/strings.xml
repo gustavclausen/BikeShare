@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">BikeShare</string>
+    <string name="generic_app_quit_text">Quiting…</string>
     <string name="title_ride">Ride</string>
     <string name="title_overview">Overview</string>
     <string name="title_account">Account</string>
@@ -23,7 +24,8 @@
 
     <!-- Permissions -->
     <string name="permission_rationale_location">
-        Access to the location service, which shows your current location on the map, is required.
+        Access to this device\'s location service is required for BikeShare to function properly.\n
+        Click \'OK\' to continue, or click \'CANCEL\' to exit the application.
     </string>
     <string name="location_permission_denied">
         BikeShare requires location permission to function properly.
@@ -32,6 +34,13 @@
         System Settings &gt; Apps &gt; \'BikeShare\'.
     </string>
     <string name="permission_required_toast">
-        Location permission is required for the map to display your location.
+        Location permission is required for BikeShare to function properly.
     </string>
+
+    <!-- Location -->
+    <string name="location_service_error">
+        Could not get the location of this device. Make sure the location service is enabled.
+    </string>
+    <string name="location_service_required_toast">Make sure location service is enabled before continuing.</string>
+    <string name="location_not_read_message">Location has not yet been read. Please try again.</string>
 </resources>
