@@ -313,7 +313,7 @@ class RegisterBikeFragment : Fragment() {
     }
 
     private fun getCompressedBikePhoto(): ByteArray? {
-        if (mCurrentBikePhotoPath != null) return null
+        if (mCurrentBikePhotoPath == null) return null
 
         val bitmap = BitmapFactory.decodeFile(mCurrentBikePhotoPath)
         ByteArrayOutputStream().use { stream ->

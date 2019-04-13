@@ -13,6 +13,9 @@ import kotlinx.android.synthetic.main.activity_bike_share.*
 class BikeShareActivity : AppCompatActivity() {
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        // Return if user presses the same navigation item
+        if (bottom_navigation.selectedItemId == item.itemId) return@OnNavigationItemSelectedListener false
+
         when (item.itemId) {
             R.id.navigation_ride -> {
                 loadFragment(RideFragment())

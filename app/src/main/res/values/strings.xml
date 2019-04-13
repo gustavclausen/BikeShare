@@ -23,6 +23,8 @@
     <string name="rides_section_label">Rides</string>
     <string name="bikes_section_label">Bikes</string>
     <string name="add_bike_button_text">Add bike</string>
+    <string name="in_use">In use</string>
+    <string name="not_in_use">Not in use</string>
 
     <!-- Permissions -->
     <string name="permission_rationale_location">
