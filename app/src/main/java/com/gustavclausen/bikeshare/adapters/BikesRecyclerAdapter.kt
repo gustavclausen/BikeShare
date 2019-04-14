@@ -22,15 +22,15 @@ class BikesRecyclerAdapter (private val context: Context, data: OrderedRealmColl
         RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_bike, parent, false)) {
 
         internal fun bind(bike: Bike) {
-            val bikeType = itemView.findViewById(R.id.bike_list_item_type) as TextView
-            bikeType.text = bike.type
+            val type = itemView.findViewById(R.id.bike_list_item_type) as TextView
+            type.text = bike.type
 
-            val lastKnownPositionAddress = itemView.findViewById(R.id.bike_list_item_address) as TextView
-            lastKnownPositionAddress.text = bike.lastKnownPositionAddress
+            val lastLocationAddress = itemView.findViewById(R.id.bike_list_item_address) as TextView
+            lastLocationAddress.text = bike.lastLocationAddress
 
-            val bikeInUse = itemView.findViewById(R.id.bike_list_item_in_use) as TextView
-            bikeInUse.text = if (bike.inUse) context.getString(R.string.in_use)
-                             else context.getString(R.string.not_in_use)
+            val inUse = itemView.findViewById(R.id.bike_list_item_in_use) as TextView
+            inUse.text = if (bike.inUse) context.getString(R.string.in_use)
+                         else context.getString(R.string.not_in_use)
         }
     }
 }

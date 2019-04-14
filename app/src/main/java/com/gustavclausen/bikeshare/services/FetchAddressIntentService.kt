@@ -23,11 +23,11 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
 
     object Constants {
         private const val PACKAGE_NAME = "com.gustavclausen.bikeshare"
-        const val SUCCESS_RESULT = 0
-        const val FAILURE_RESULT = 1
-        const val RECEIVER = "$PACKAGE_NAME.RECEIVER"
-        const val RESULT_DATA_KEY = "$PACKAGE_NAME.RESULT_DATA_KEY"
-        const val LOCATION_DATA_EXTRA = "$PACKAGE_NAME.LOCATION_DATA_EXTRA"
+        const val EXTRA_SUCCESS_RESULT = 0
+        const val EXTRA_FAILURE_RESULT = 1
+        const val EXTRA_RESULT_DATA_KEY = "$PACKAGE_NAME.EXTRA_RESULT_DATA_KEY"
+        const val EXTRA_RECEIVER = "$PACKAGE_NAME.EXTRA_RECEIVER"
+        const val EXTRA_LOCATION_DATA = "$PACKAGE_NAME.EXTRA_LOCATION_DATA"
         const val TAG = "FetchAddressService"
     }
 
@@ -35,11 +35,10 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
         intent ?: return
 
         // Get the location passed to this service through an extra
-        val location = intent.getParcelableExtra<Location>(Constants.LOCATION_DATA_EXTRA)
+        val location = intent.getParcelableExtra<Location>(Constants.EXTRA_LOCATION_DATA)
 
         // Get result receiver passed to this service through an extra
-        mReceiver = intent.getParcelableExtra(Constants.RECEIVER)
-        mReceiver ?: return
+        mReceiver = intent.getParcelableExtra(Constants.EXTRA_RECEIVER) ?: return
 
         val geocoder = Geocoder(this, Locale.getDefault())
 
@@ -52,7 +51,7 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
             // Catch network or other I/O problems
             val errorMessage = getString(R.string.fetch_address_service_not_available)
 
-            deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage)
+            deliverResultToReceiver(Constants.EXTRA_FAILURE_RESULT, errorMessage)
             Log.e(Constants.TAG, errorMessage, ioe)
 
             return
@@ -72,7 +71,7 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
         if (addresses.isEmpty()) {
             val errorMessage = getString(R.string.no_addresses_found_error_message)
 
-            deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage)
+            deliverResultToReceiver(Constants.EXTRA_FAILURE_RESULT, errorMessage)
             Log.e(Constants.TAG, errorMessage)
 
             return
@@ -84,11 +83,11 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
         val addressFragments = with(firstAddress) {
             (0..maxAddressLineIndex).map { getAddressLine(it) }
         }
-        deliverResultToReceiver(Constants.SUCCESS_RESULT, addressFragments.joinToString(separator = "\n"))
+        deliverResultToReceiver(Constants.EXTRA_SUCCESS_RESULT, addressFragments.joinToString(separator = "\n"))
     }
 
     private fun deliverResultToReceiver(resultCode: Int, message: String) {
-        val bundle = Bundle().apply { putString(Constants.RESULT_DATA_KEY, message) }
+        val bundle = Bundle().apply { putString(Constants.EXTRA_RESULT_DATA_KEY, message) }
         mReceiver?.send(resultCode, bundle)
     }
 }

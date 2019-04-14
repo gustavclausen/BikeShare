@@ -24,7 +24,7 @@ class BikeDB private constructor() {
             bike.owner = owner
             bike.lastKnownPositionLat = lastKnownPosition.lat
             bike.lastKnownPositionLong = lastKnownPosition.long
-            bike.lastKnownPositionAddress = locationAddress
+            bike.lastLocationAddress = locationAddress
         }
     }
 

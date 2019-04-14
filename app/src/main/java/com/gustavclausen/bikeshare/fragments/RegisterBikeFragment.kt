@@ -348,8 +348,8 @@ class RegisterBikeFragment : Fragment() {
 
     private fun fetchLocationAddress(location: Location) {
         val intent = Intent(context, FetchAddressIntentService::class.java).apply {
-            putExtra(FetchAddressIntentService.Constants.RECEIVER, AddressResultReceiver())
-            putExtra(FetchAddressIntentService.Constants.LOCATION_DATA_EXTRA, location)
+            putExtra(FetchAddressIntentService.Constants.EXTRA_RECEIVER, AddressResultReceiver())
+            putExtra(FetchAddressIntentService.Constants.EXTRA_LOCATION_DATA, location)
         }
 
         context?.startService(intent)
@@ -373,11 +373,11 @@ class RegisterBikeFragment : Fragment() {
     internal inner class AddressResultReceiver : ResultReceiver(Handler(Looper.getMainLooper())) {
 
         override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-            val resultMessage = resultData?.getString(FetchAddressIntentService.Constants.RESULT_DATA_KEY) ?: ""
+            val resultMessage = resultData?.getString(FetchAddressIntentService.Constants.EXTRA_RESULT_DATA_KEY) ?: ""
 
-            if (resultCode == FetchAddressIntentService.Constants.FAILURE_RESULT) {
+            if (resultCode == FetchAddressIntentService.Constants.EXTRA_FAILURE_RESULT) {
                 Toast.makeText(context!!, resultMessage, Toast.LENGTH_SHORT).show()
-            } else if (resultCode == FetchAddressIntentService.Constants.SUCCESS_RESULT) {
+            } else if (resultCode == FetchAddressIntentService.Constants.EXTRA_SUCCESS_RESULT) {
                 mLocationAddress = resultMessage
             }
         }

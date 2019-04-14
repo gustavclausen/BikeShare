@@ -14,7 +14,8 @@ class BikeShareActivity : AppCompatActivity() {
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         // Return if user presses the same navigation item
-        if (bottom_navigation.selectedItemId == item.itemId) return@OnNavigationItemSelectedListener false
+        if (bottom_navigation.selectedItemId == item.itemId)
+            return@OnNavigationItemSelectedListener false
 
         when (item.itemId) {
             R.id.navigation_ride -> {
@@ -33,7 +34,7 @@ class BikeShareActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
         }
-        false
+        return@OnNavigationItemSelectedListener false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +42,8 @@ class BikeShareActivity : AppCompatActivity() {
         setContentView(R.layout.activity_bike_share)
 
         // Load default fragment on launch
-        if (savedInstanceState == null) loadFragment(RideFragment())
+        if (savedInstanceState == null)
+            loadFragment(RideFragment())
 
         bottom_navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
