@@ -25,6 +25,10 @@
     <string name="add_bike_button_text">Add bike</string>
     <string name="in_use">In use</string>
     <string name="not_in_use">Not in use</string>
+    <string name="fetch_address_service_not_available">
+        Address fetch service not available. Make sure that your device is connected to the Internet
+    </string>
+    <string name="no_addresses_found_error_message">No nearby address was found</string>
 
     <!-- Permissions -->
     <string name="permission_rationale_location">

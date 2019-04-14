@@ -8,9 +8,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.AsyncTask
-import android.os.Bundle
-import android.os.Environment
+import android.location.Location
+import android.os.*
 import android.provider.MediaStore
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -28,6 +27,7 @@ import com.gustavclausen.bikeshare.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.models.BikeDB
 import com.gustavclausen.bikeshare.models.Coordinate
 import com.gustavclausen.bikeshare.models.UserDB
+import com.gustavclausen.bikeshare.services.FetchAddressIntentService
 import com.gustavclausen.bikeshare.utils.PermissionUtils
 import kotlinx.android.synthetic.main.fragment_register_bike.*
 import java.io.ByteArrayOutputStream
@@ -48,6 +48,7 @@ class RegisterBikeFragment : Fragment() {
     private var mSelectedBikeType: Int = 0
     private var mLocationPermissionDenied: Boolean = false
     private var mLocation: Coordinate? = null
+    private var mLocationAddress: String? = null
 
     companion object {
         private const val TAG = "RegisterBikeFragment"
@@ -58,6 +59,7 @@ class RegisterBikeFragment : Fragment() {
         private const val SAVED_LOCK_ID = "lockId"
         private const val SAVED_SELECTED_BIKE_TYPE = "selectedBikeType"
         private const val SAVED_LOCATION = "location"
+        private const val SAVED_LOCATION_ADDRESS = "locationAddress"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +71,7 @@ class RegisterBikeFragment : Fragment() {
             mLockId = savedInstanceState.getSerializable(SAVED_LOCK_ID) as UUID?
             mSelectedBikeType = savedInstanceState.getInt(SAVED_SELECTED_BIKE_TYPE)
             mLocation = savedInstanceState.getSerializable(SAVED_LOCATION) as Coordinate?
+            mLocationAddress = savedInstanceState.getString(SAVED_LOCATION_ADDRESS)
         }
     }
 
@@ -91,6 +94,7 @@ class RegisterBikeFragment : Fragment() {
 
                 val location = locationResult!!.lastLocation
                 mLocation = Coordinate(location.latitude, location.longitude)
+                fetchLocationAddress(location)
             }
         }
 
@@ -127,6 +131,7 @@ class RegisterBikeFragment : Fragment() {
         outState.putSerializable(SAVED_LOCK_ID, mLockId)
         outState.putInt(SAVED_SELECTED_BIKE_TYPE, bike_type_spinner.selectedItemPosition)
         outState.putSerializable(SAVED_LOCATION, mLocation)
+        outState.putString(SAVED_LOCATION_ADDRESS, mLocationAddress)
     }
 
     override fun onResume() {
@@ -306,7 +311,8 @@ class RegisterBikeFragment : Fragment() {
             priceHour = price_input.text.toString().toInt(),
             picture = getCompressedBikePhoto(),
             owner = UserDB.get().getUser(registeredUserId)!!,
-            lastKnownPosition = mLocation!!
+            lastKnownPosition = mLocation!!,
+            locationAddress = mLocationAddress!!
         )
 
         activity?.finish() // Close activity after submission
@@ -340,6 +346,15 @@ class RegisterBikeFragment : Fragment() {
         }
     }
 
+    private fun fetchLocationAddress(location: Location) {
+        val intent = Intent(context, FetchAddressIntentService::class.java).apply {
+            putExtra(FetchAddressIntentService.Constants.RECEIVER, AddressResultReceiver())
+            putExtra(FetchAddressIntentService.Constants.LOCATION_DATA_EXTRA, location)
+        }
+
+        context?.startService(intent)
+    }
+
     private class ReadBikeTypes internal constructor(
         val handler: () -> List<String>,
         val postExecution: (List<String>) -> Unit
@@ -351,6 +366,20 @@ class RegisterBikeFragment : Fragment() {
 
         override fun onPostExecute(result: List<String>) {
             postExecution(result)
+        }
+    }
+
+
+    internal inner class AddressResultReceiver : ResultReceiver(Handler(Looper.getMainLooper())) {
+
+        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+            val resultMessage = resultData?.getString(FetchAddressIntentService.Constants.RESULT_DATA_KEY) ?: ""
+
+            if (resultCode == FetchAddressIntentService.Constants.FAILURE_RESULT) {
+                Toast.makeText(context!!, resultMessage, Toast.LENGTH_SHORT).show()
+            } else if (resultCode == FetchAddressIntentService.Constants.SUCCESS_RESULT) {
+                mLocationAddress = resultMessage
+            }
         }
     }
 }

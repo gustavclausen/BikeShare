@@ -15,7 +15,7 @@ class BikeDB private constructor() {
         fun get(): BikeDB = db
     }
 
-    fun addBike(lockId: String, type: String, priceHour: Int, picture: ByteArray?, owner: User, lastKnownPosition: Coordinate) {
+    fun addBike(lockId: String, type: String, priceHour: Int, picture: ByteArray?, owner: User, lastKnownPosition: Coordinate, locationAddress: String) {
         mRealm.executeTransaction { realm ->
             val bike = realm.createObject(Bike::class.java, lockId)
             bike.type = type
@@ -24,6 +24,7 @@ class BikeDB private constructor() {
             bike.owner = owner
             bike.lastKnownPositionLat = lastKnownPosition.lat
             bike.lastKnownPositionLong = lastKnownPosition.long
+            bike.lastKnownPositionAddress = locationAddress
         }
     }
 
