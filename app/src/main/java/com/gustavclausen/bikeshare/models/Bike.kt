@@ -9,6 +9,7 @@ open class Bike : RealmObject() {
     @Required var type: String = ""
     var lastKnownPositionLat: Double = 0.0
     var lastKnownPositionLong: Double = 0.0
+    var lastLocationAddress: String = ""
     var picture: ByteArray? = null
     var priceHour: Int = 0
     var owner: User? = null

@@ -9,10 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gustavclausen.bikeshare.BikeShareApplication
-
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.activities.RegisterBikeActivity
-import com.gustavclausen.bikeshare.models.BikeDB
 import com.gustavclausen.bikeshare.models.UserDB
 import kotlinx.android.synthetic.main.fragment_account.*
 
@@ -55,7 +53,7 @@ class AccountFragment : Fragment() {
     }
 
     private fun setUserInfo() {
-        val user = mUserDb.getUser(mUserId)!!
+        val user = mUserDb.getUser(mUserId) ?: return
 
         user_full_name_text.text = user.fullName
         user_account_balance_text.text = getString(R.string.account_balance_text, user.accountBalance)

@@ -4,6 +4,8 @@
     <string name="title_ride">Ride</string>
     <string name="title_overview">Overview</string>
     <string name="title_account">Account</string>
+    <string name="title_bikes_overview">Bikes</string>
+    <string name="title_rides_overview">Rides</string>
     <string name="title_register_bike">Register a bike</string>
     <string name="label_lock_id_register_bike">Lock id</string>
     <string name="button_register_lock_id">Register lock</string>
@@ -21,6 +23,12 @@
     <string name="rides_section_label">Rides</string>
     <string name="bikes_section_label">Bikes</string>
     <string name="add_bike_button_text">Add bike</string>
+    <string name="in_use">In use</string>
+    <string name="not_in_use">Not in use</string>
+    <string name="fetch_address_service_not_available">
+        Address fetch service not available. Make sure that your device is connected to the Internet
+    </string>
+    <string name="no_addresses_found_error_message">No nearby address was found</string>
 
     <!-- Permissions -->
     <string name="permission_rationale_location">
