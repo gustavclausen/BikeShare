@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/activity_horizontal_margin">
+
+    <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
+                                                 android:layout_height="wrap_content">
+
+        <LinearLayout android:id="@+id/photo_section"
+                      android:layout_height="wrap_content"
+                      android:layout_width="match_parent"
+                      android:layout_marginTop="8dp"
+                      android:orientation="vertical"
+                      app:layout_constraintTop_toTopOf="parent">
+
+            <TextView android:text="@string/label_photo_register_bike"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      style="@style/HeaderLabelStyle"/>
+
+            <ImageView android:id="@+id/bike_photo"
+                       app:srcCompat="@drawable/ic_missing_image"
+                       android:layout_width="150dp"
+                       android:layout_height="150dp"
+                       android:layout_marginTop="8dp"
+                       android:background="@drawable/default_border"
+                       tools:ignore="ContentDescription"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/type_section"
+                      android:orientation="vertical"
+                      android:layout_height="wrap_content"
+                      android:layout_width="match_parent"
+                      android:layout_marginTop="8dp"
+                      app:layout_constraintTop_toBottomOf="@+id/photo_section">
+
+            <TextView android:text="@string/label_type_register_bike"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      style="@style/HeaderLabelStyle"/>
+
+            <TextView android:id="@+id/bike_type_text"
+                      android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:layout_marginTop="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/price_section"
+                      android:layout_height="wrap_content"
+                      android:layout_width="match_parent"
+                      android:layout_marginTop="8dp"
+                      android:orientation="vertical"
+                      app:layout_constraintTop_toBottomOf="@+id/type_section">
+
+            <TextView android:text="@string/label_price_register_bike"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      style="@style/HeaderLabelStyle"/>
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:layout_marginTop="8dp"
+                          android:orientation="horizontal">
+
+                <TextView android:text="@string/currency_label"
+                          android:layout_width="wrap_content"
+                          android:layout_height="match_parent"
+                          android:gravity="center"/>
+
+                <TextView android:id="@+id/bike_price_text"
+                          android:layout_width="match_parent"
+                          android:layout_height="match_parent"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/availability_section"
+                      android:layout_height="wrap_content"
+                      android:layout_width="match_parent"
+                      android:layout_marginTop="8dp"
+                      android:orientation="vertical"
+                      app:layout_constraintTop_toBottomOf="@+id/price_section">
+
+            <TextView android:text="@string/label_availability_bike"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      style="@style/HeaderLabelStyle"/>
+
+            <TextView android:id="@+id/availability_label"
+                      android:layout_width="wrap_content"
+                      android:layout_height="match_parent"
+                      android:layout_marginTop="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/address_section"
+                      android:layout_height="wrap_content"
+                      android:layout_width="match_parent"
+                      android:layout_marginTop="8dp"
+                      android:orientation="vertical"
+                      app:layout_constraintTop_toBottomOf="@+id/availability_section">
+
+            <TextView android:text="@string/label_address_bike"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      style="@style/HeaderLabelStyle"/>
+
+            <TextView android:id="@+id/address_label"
+                      android:layout_width="wrap_content"
+                      android:layout_height="match_parent"
+                      android:layout_marginTop="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/owner_section"
+                      android:layout_height="wrap_content"
+                      android:layout_width="match_parent"
+                      android:layout_marginTop="8dp"
+                      android:orientation="vertical"
+                      app:layout_constraintTop_toBottomOf="@+id/address_section">
+
+            <TextView android:text="@string/label_bike_owner"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      style="@style/HeaderLabelStyle"/>
+
+            <TextView android:id="@+id/owner_label"
+                      android:layout_width="wrap_content"
+                      android:layout_height="match_parent"
+                      android:layout_marginTop="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/lock_section"
+                      android:layout_height="wrap_content"
+                      android:layout_width="match_parent"
+                      android:layout_marginTop="8dp"
+                      android:orientation="vertical"
+                      app:layout_constraintTop_toBottomOf="@+id/owner_section">
+
+            <TextView android:text="@string/label_lock_id_register_bike"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      style="@style/HeaderLabelStyle"/>
+
+            <TextView android:id="@+id/lock_id_text"
+                      android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:layout_marginTop="8dp"/>
+        </LinearLayout>
+
+        <Button android:id="@+id/view_rides_button"
+                android:text="@string/button_view_rides"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/lock_section"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        <Button android:id="@+id/view_payments_button"
+                android:text="@string/button_view_payments"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/view_rides_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

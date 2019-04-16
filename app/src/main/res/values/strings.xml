@@ -1,4 +1,27 @@
 <resources>
+    <!-- Permissions -->
+    <string name="permission_rationale_location">
+        Access to this device\'s location service is required for BikeShare to function properly.\n
+        Click \'OK\' to continue, or click \'CANCEL\' to exit the application.
+    </string>
+    <string name="location_permission_denied">
+        BikeShare requires location permission to function properly.
+        Please try again and grant access to use the location.\n
+        If the permission has been permanently denied, it can be enabled from the
+        System Settings &gt; Apps &gt; \'BikeShare\'.
+    </string>
+    <string name="permission_required_toast">
+        Location permission is required for BikeShare to function properly.
+    </string>
+
+    <!-- Location -->
+    <string name="location_service_error">
+        Could not get the location of this device. Make sure the location service is enabled.
+    </string>
+    <string name="location_service_required_toast">Make sure location service is enabled before continuing.</string>
+    <string name="location_not_read_message">Location has not yet been read. Please try again.</string>
+
+    <!-- General -->
     <string name="app_name">BikeShare</string>
     <string name="generic_app_quit_text">Quiting…</string>
     <string name="title_ride">Ride</string>
@@ -29,26 +52,10 @@
         Address fetch service not available. Make sure that your device is connected to the Internet
     </string>
     <string name="no_addresses_found_error_message">No nearby address was found</string>
-
-    <!-- Permissions -->
-    <string name="permission_rationale_location">
-        Access to this device\'s location service is required for BikeShare to function properly.\n
-        Click \'OK\' to continue, or click \'CANCEL\' to exit the application.
-    </string>
-    <string name="location_permission_denied">
-        BikeShare requires location permission to function properly.
-        Please try again and grant access to use the location.\n
-        If the permission has been permanently denied, it can be enabled from the
-        System Settings &gt; Apps &gt; \'BikeShare\'.
-    </string>
-    <string name="permission_required_toast">
-        Location permission is required for BikeShare to function properly.
-    </string>
-
-    <!-- Location -->
-    <string name="location_service_error">
-        Could not get the location of this device. Make sure the location service is enabled.
-    </string>
-    <string name="location_service_required_toast">Make sure location service is enabled before continuing.</string>
-    <string name="location_not_read_message">Location has not yet been read. Please try again.</string>
+    <string name="label_availability_bike">In use</string>
+    <string name="label_address_bike">Last known address</string>
+    <string name="label_bike_owner">Owner</string>
+    <string name="button_view_rides">View rides</string>
+    <string name="button_view_payments">View payments</string>
+    <string name="title_bike_detail">Bike</string>
 </resources>
