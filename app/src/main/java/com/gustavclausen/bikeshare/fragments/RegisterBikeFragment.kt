@@ -8,7 +8,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.location.Location
+import android.media.ExifInterface
 import android.os.*
 import android.provider.MediaStore
 import android.support.v4.app.Fragment
@@ -18,6 +20,7 @@ import android.util.Log
 import android.view.*
 import android.view.View.VISIBLE
 import android.widget.ArrayAdapter
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
@@ -30,6 +33,8 @@ import com.gustavclausen.bikeshare.models.UserDB
 import com.gustavclausen.bikeshare.services.FetchAddressIntentService
 import com.gustavclausen.bikeshare.utils.PermissionUtils
 import kotlinx.android.synthetic.main.fragment_register_bike.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -38,12 +43,13 @@ import java.util.*
 
 class RegisterBikeFragment : Fragment() {
 
-    private val bikesDB = BikeDB.get()
+    private val mBikeDB = BikeDB.get()
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private lateinit var mLocationCallback: LocationCallback
 
     private var mCurrentBikePhotoPath: String? = null
+    private var mPicture: ByteArray? = null
     private var mLockId: UUID? = null
     private var mSelectedBikeType: Int = 0
     private var mLocationPermissionDenied: Boolean = false
@@ -56,6 +62,7 @@ class RegisterBikeFragment : Fragment() {
         private const val REQUEST_LOCATION_PERMISSION_CODE = 1
 
         private const val SAVED_THUMBNAIL_BIKE_PHOTO_PATH = "thumbnailBikePhotoPath"
+        private const val SAVED_PICTURE = "bikePicture"
         private const val SAVED_LOCK_ID = "lockId"
         private const val SAVED_SELECTED_BIKE_TYPE = "selectedBikeType"
         private const val SAVED_LOCATION = "location"
@@ -72,6 +79,7 @@ class RegisterBikeFragment : Fragment() {
             mSelectedBikeType = savedInstanceState.getInt(SAVED_SELECTED_BIKE_TYPE)
             mLocation = savedInstanceState.getSerializable(SAVED_LOCATION) as Coordinate?
             mLocationAddress = savedInstanceState.getString(SAVED_LOCATION_ADDRESS)
+            mPicture = savedInstanceState.getByteArray(SAVED_PICTURE)
         }
     }
 
@@ -132,6 +140,7 @@ class RegisterBikeFragment : Fragment() {
         outState.putInt(SAVED_SELECTED_BIKE_TYPE, bike_type_spinner.selectedItemPosition)
         outState.putSerializable(SAVED_LOCATION, mLocation)
         outState.putString(SAVED_LOCATION_ADDRESS, mLocationAddress)
+        outState.putByteArray(SAVED_PICTURE, mPicture)
     }
 
     override fun onResume() {
@@ -167,8 +176,14 @@ class RegisterBikeFragment : Fragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK)
-            setBikeThumbnail()
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            doAsync {
+                mPicture = getCompressedBikePhoto()
+                uiThread {
+                    setBikeThumbnail()
+                }
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -258,9 +273,10 @@ class RegisterBikeFragment : Fragment() {
     }
 
     private fun setBikeTypesSpinner() {
-        ReadBikeTypes(
-            { bikesDB.getBikeTypes(context!!).toList() },
-            { bikeTypes ->
+        doAsync {
+            val bikeTypes = mBikeDB.getBikeTypes(context!!).toList()
+
+            uiThread {
                 bike_type_spinner.adapter = ArrayAdapter<String>(
                     context,
                     android.R.layout.simple_spinner_item,
@@ -268,12 +284,11 @@ class RegisterBikeFragment : Fragment() {
                 )
                 bike_type_spinner.setSelection(mSelectedBikeType)
             }
-        ).execute()
+        }
     }
 
     private fun setBikeThumbnail() {
-        if (mCurrentBikePhotoPath != null)
-            Glide.with(this).load(mCurrentBikePhotoPath).centerCrop().into(bike_photo_button)
+        Glide.with(this).load(mPicture).centerCrop().placeholder(R.drawable.ic_camera).into(bike_photo_button)
     }
 
     private fun setLockId() {
@@ -304,26 +319,57 @@ class RegisterBikeFragment : Fragment() {
         val userPreferences = context!!.getSharedPreferences(BikeShareApplication.PREF_USER_FILE, Context.MODE_PRIVATE)
         val registeredUserId = userPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
 
-        // Save bike to DB
-        BikeDB.get().addBike(
-            lockId = mLockId.toString(),
-            type = bike_type_spinner.selectedItem.toString(),
-            priceHour = price_input.text.toString().toInt(),
-            picture = getCompressedBikePhoto(),
-            owner = UserDB.get().getUser(registeredUserId)!!,
-            lastKnownPosition = mLocation!!,
-            locationAddress = mLocationAddress!!
-        )
+        val bikeType = bike_type_spinner.selectedItem.toString()
+        val priceInput = price_input.text.toString().toInt()
 
-        activity?.finish() // Close activity after submission
+        doAsync {
+            val user = UserDB.get().getUser(registeredUserId)!!
+
+            // Save bike to DB
+            mBikeDB.addBike(
+                lockId = mLockId.toString(),
+                type = bikeType,
+                priceHour = priceInput,
+                picture = mPicture,
+                owner = user,
+                lastKnownPosition = mLocation!!,
+                locationAddress = mLocationAddress!!
+            )
+
+            uiThread {
+                activity?.finish() // Close activity after submission
+            }
+        }
     }
 
     private fun getCompressedBikePhoto(): ByteArray? {
         if (mCurrentBikePhotoPath == null) return null
 
+        /*
+         * Exif information that includes information about orientation is lost when creating a bitmap.
+         * Thus, this information is preserved and applied as a transform during the creation of the bitmap.
+         */
+        val exif = ExifInterface(mCurrentBikePhotoPath)
+        val originalOrientation =
+            exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED
+            )
+
+        val matrix = Matrix()
+
+        when (originalOrientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.setRotate(90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.setRotate(180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.setRotate(270f)
+        }
+
         val bitmap = BitmapFactory.decodeFile(mCurrentBikePhotoPath)
+        val transformedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+
+        // Compress image and convert to byte array
         ByteArrayOutputStream().use { stream ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+            transformedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream)
             return stream.toByteArray()
         }
     }
@@ -353,20 +399,6 @@ class RegisterBikeFragment : Fragment() {
         }
 
         context?.startService(intent)
-    }
-
-    private class ReadBikeTypes internal constructor(
-        val handler: () -> List<String>,
-        val postExecution: (List<String>) -> Unit
-    ) : AsyncTask<Void, Void, List<String>>() {
-
-        override fun doInBackground(vararg p0: Void?): List<String> {
-            return handler()
-        }
-
-        override fun onPostExecute(result: List<String>) {
-            postExecution(result)
-        }
     }
 
 
