@@ -52,10 +52,12 @@
         Address fetch service not available. Make sure that your device is connected to the Internet
     </string>
     <string name="no_addresses_found_error_message">No nearby address was found</string>
-    <string name="label_availability_bike">In use</string>
+    <string name="label_availability_bike">Status</string>
     <string name="label_address_bike">Last known address</string>
     <string name="label_bike_owner">Owner</string>
     <string name="button_view_rides">View rides</string>
     <string name="button_view_payments">View payments</string>
     <string name="title_bike_detail">Bike</string>
+    <string name="button_show_bike_details">Show bike details</string>
+    <string name="button_rent_bike">Rent bike</string>
 </resources>
