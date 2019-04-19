@@ -5,8 +5,6 @@ import java.util.*
 
 class UserDB private constructor() {
 
-    private val mRealm = Realm.getDefaultInstance()!!
-
     companion object {
         private val db: UserDB = UserDB()
 
@@ -16,7 +14,7 @@ class UserDB private constructor() {
     fun addUser(fullName: String): String? {
         val newUserId: String? = UUID.randomUUID().toString()
 
-        mRealm.executeTransaction { realm ->
+        Realm.getDefaultInstance().executeTransaction { realm ->
             val user = realm.createObject(User::class.java, newUserId)
             user.fullName = fullName
         }
@@ -25,17 +23,17 @@ class UserDB private constructor() {
     }
 
     fun getUser(userId: String): User? =
-        mRealm.where(User::class.java).equalTo("id", userId).findFirst()
+        Realm.getDefaultInstance().where(User::class.java).equalTo("id", userId).findFirst()
 
     fun addToBalance(userId: String, amount: Double) {
-        mRealm.executeTransaction {
+        Realm.getDefaultInstance().executeTransaction {
             val user = getUser(userId)
             user!!.accountBalance += amount
         }
     }
 
     fun substractFromBalance(userId: String, amount: Double) {
-        mRealm.executeTransaction {
+        Realm.getDefaultInstance().executeTransaction {
             val user = getUser(userId)
             user!!.accountBalance -= amount
         }

@@ -5,8 +5,6 @@ import io.realm.Realm
 
 class BikeDB private constructor() {
 
-    private val mRealm = Realm.getDefaultInstance()!!
-
     companion object {
         private const val BIKE_TYPES_ASSETS_PATH = "bike_types.txt"
 
@@ -15,8 +13,16 @@ class BikeDB private constructor() {
         fun get(): BikeDB = db
     }
 
-    fun addBike(lockId: String, type: String, priceHour: Int, picture: ByteArray?, owner: User, lastKnownPosition: Coordinate, locationAddress: String) {
-        mRealm.executeTransaction { realm ->
+    fun addBike(
+        lockId: String,
+        type: String,
+        priceHour: Int,
+        picture: ByteArray?,
+        owner: User,
+        lastKnownPosition: Coordinate,
+        locationAddress: String
+    ) {
+        Realm.getDefaultInstance().executeTransaction { realm ->
             val bike = realm.createObject(Bike::class.java, lockId)
             bike.type = type
             bike.priceHour = priceHour
@@ -29,7 +35,10 @@ class BikeDB private constructor() {
     }
 
     fun getAllBikes(): List<Bike> =
-        mRealm.where(Bike::class.java).findAll().toList()
+        Realm.getDefaultInstance().where(Bike::class.java).findAll().toList()
+
+    fun getBike(lockId: String): Bike? =
+        Realm.getDefaultInstance().where(Bike::class.java).equalTo("lockId", lockId).findFirst()
 
     fun getBikeTypes(context: Context) : Sequence<String> =
         sequence {
