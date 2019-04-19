@@ -2,13 +2,18 @@ package com.gustavclausen.bikeshare.fragments
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
@@ -16,9 +21,16 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.*
+import com.google.maps.android.clustering.Cluster
+import com.google.maps.android.clustering.ClusterItem
+import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.gustavclausen.bikeshare.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.utils.PermissionUtils
 import com.gustavclausen.bikeshare.R
+import com.gustavclausen.bikeshare.activities.BikeDetailActivity
+import com.gustavclausen.bikeshare.models.BikeDB
 import com.gustavclausen.bikeshare.utils.MapStateManager
 
 /*
@@ -29,6 +41,7 @@ class RideFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private var mLocationPermissionDenied: Boolean = false
+    private var mClickedItem: ClusterMarkerLocation? = null
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -75,13 +88,48 @@ class RideFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.setMaxZoomPreference(25.0f)
+        mMap.setMaxZoomPreference(35.0f)
 
         enableLocation()
 
         val lastPosition = MapStateManager.getSavedMapState(context!!)
         val update = CameraUpdateFactory.newCameraPosition(lastPosition)
         mMap.moveCamera(update)
+
+        mapAvailableBikes()
+    }
+
+    private fun mapAvailableBikes() {
+        val clusterManager = ClusterManager<ClusterMarkerLocation>(context, mMap)
+        val renderer = BikeIconRendered(context!!, mMap, clusterManager)
+        clusterManager.renderer = renderer
+        mMap.setOnCameraIdleListener(clusterManager)
+        mMap.setOnCameraMoveListener(renderer)
+        mMap.setOnMarkerClickListener(clusterManager)
+
+        clusterManager.setOnClusterItemClickListener { clusterItem ->
+            mClickedItem = clusterItem
+
+            // Move camera to clicked item
+            val itemPosition = LatLng(clusterItem.position.latitude, clusterItem.position.longitude)
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(itemPosition, 18f)).also {
+                val bikeOptionsMenu = layoutInflater.inflate(R.layout.menu_bike_options, null)
+                bikeOptionsMenu.findViewById<Button>(R.id.show_bike_details_button).setOnClickListener {
+                    startActivity(BikeDetailActivity.newIntent(context!!, clusterItem.bikeLockId))
+                }
+                val dialog = AlertDialog.Builder(context).create()
+                dialog.setView(bikeOptionsMenu)
+
+                dialog.show()
+            }
+
+            true
+        }
+
+        BikeDB.get().getAllBikes().forEach { bike ->
+            val item = ClusterMarkerLocation(LatLng(bike.lastKnownPositionLat, bike.lastKnownPositionLong), bike.lockId)
+            clusterManager.addItem(item)
+        }
     }
 
     private fun enableLocation() {
@@ -137,5 +185,55 @@ class RideFragment : Fragment(), OnMapReadyCallback {
         else
             // Set variable to display the missing permission error dialog when this fragment resumes
             mLocationPermissionDenied = true
+    }
+
+    class ClusterMarkerLocation(private val coordinate: LatLng, val bikeLockId: String) : ClusterItem {
+        override fun getSnippet(): String {
+            return bikeLockId
+        }
+
+        override fun getTitle(): String {
+            return bikeLockId
+        }
+
+        override fun getPosition(): LatLng {
+            return coordinate
+        }
+    }
+
+    inner class BikeIconRendered(private val context: Context, private val map: GoogleMap, clusterManager: ClusterManager<ClusterMarkerLocation>) :
+        DefaultClusterRenderer<ClusterMarkerLocation>(context, map, clusterManager), GoogleMap.OnCameraMoveListener {
+
+        private var mCurrentZoomLevel: Float = 0f
+
+        override fun onBeforeClusterItemRendered(item: ClusterMarkerLocation?, markerOptions: MarkerOptions?) {
+            markerOptions?.icon(bitmapDescriptorFromVector(context, R.drawable.ic_bike_location_marker))
+        }
+
+        override fun onCameraMove() {
+            mCurrentZoomLevel = map.cameraPosition.zoom
+        }
+
+        private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
+            val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)!!
+            val scaleFactor = 2
+            vectorDrawable.setBounds(0, 0, vectorDrawable.intrinsicWidth * scaleFactor, vectorDrawable.intrinsicHeight * scaleFactor)
+            val bitmap = Bitmap.createBitmap(vectorDrawable.intrinsicWidth * scaleFactor, vectorDrawable.intrinsicHeight * scaleFactor, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            vectorDrawable.draw(canvas)
+            return BitmapDescriptorFactory.fromBitmap(bitmap)
+        }
+
+        override fun shouldRenderAsCluster(cluster: Cluster<ClusterMarkerLocation>?): Boolean {
+            // Determine if cluster will be created
+            var wouldCluster = super.shouldRenderAsCluster(cluster)
+
+            // Don't render cluster in super dense area if camera zoomed far in
+            if (wouldCluster) {
+                wouldCluster = mCurrentZoomLevel < 18f
+            }
+
+            return wouldCluster
+        }
     }
 }
