@@ -2,7 +2,7 @@ package com.gustavclausen.bikeshare.utils
 
 import android.content.pm.PackageManager
 import android.support.v4.app.Fragment
-import com.gustavclausen.bikeshare.dialogs.PermissionRationaleDialog
+import com.gustavclausen.bikeshare.view.dialogs.PermissionRationaleDialog
 
 class PermissionUtils {
 
@@ -23,7 +23,7 @@ class PermissionUtils {
             dismissText: String,
             fragment: Fragment
         ) {
-            if (fragment.shouldShowRequestPermissionRationale(permission))
+            if (fragment.shouldShowRequestPermissionRationale(permission)) {
                 // Display a dialog with rationale
                 PermissionRationaleDialog.newInstance(
                     requestPermission = permission,
@@ -32,9 +32,10 @@ class PermissionUtils {
                     finishActivity = finishActivity,
                     finishActivityToastText = dismissText
                 ).show(fragment.childFragmentManager, "dialog")
-            else
+            } else {
                 // Permission has not been granted yet, request it
                 fragment.requestPermissions(arrayOf(permission), requestId)
+            }
         }
     }
 }

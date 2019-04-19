@@ -22,13 +22,14 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
     private var mReceiver: ResultReceiver? = null
 
     object Constants {
+        const val TAG = "FetchAddressService"
         private const val PACKAGE_NAME = "com.gustavclausen.bikeshare"
+
         const val EXTRA_SUCCESS_RESULT = 0
         const val EXTRA_FAILURE_RESULT = 1
         const val EXTRA_RESULT_DATA_KEY = "$PACKAGE_NAME.EXTRA_RESULT_DATA_KEY"
         const val EXTRA_RECEIVER = "$PACKAGE_NAME.EXTRA_RECEIVER"
         const val EXTRA_LOCATION_DATA = "$PACKAGE_NAME.EXTRA_LOCATION_DATA"
-        const val TAG = "FetchAddressService"
     }
 
     override fun onHandleIntent(intent: Intent?) {
@@ -42,7 +43,7 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
 
         val geocoder = Geocoder(this, Locale.getDefault())
 
-        var addresses: List<Address> = emptyList()
+        val addresses: List<Address>
 
         try {
             // Single address

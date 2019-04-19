@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-path name="bike_images" path="Android/data/com.gustavclausen.bikeshare/files/Pictures" />
+    <external-path
+        name="bike_images"
+        path="Android/data/com.gustavclausen.bikeshare/files/Pictures" />
 </paths>
