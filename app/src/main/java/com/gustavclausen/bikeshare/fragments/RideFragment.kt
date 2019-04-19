@@ -22,6 +22,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
@@ -87,7 +88,7 @@ class RideFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.setMaxZoomPreference(25.0f)
+        mMap.setMaxZoomPreference(35.0f)
 
         enableLocation()
 
@@ -100,8 +101,10 @@ class RideFragment : Fragment(), OnMapReadyCallback {
 
     private fun mapAvailableBikes() {
         val clusterManager = ClusterManager<ClusterMarkerLocation>(context, mMap)
-        clusterManager.renderer = BikeIconRendered(context!!, mMap, clusterManager)
+        val renderer = BikeIconRendered(context!!, mMap, clusterManager)
+        clusterManager.renderer = renderer
         mMap.setOnCameraIdleListener(clusterManager)
+        mMap.setOnCameraMoveListener(renderer)
         mMap.setOnMarkerClickListener(clusterManager)
 
         clusterManager.setOnClusterItemClickListener { clusterItem ->
@@ -109,16 +112,16 @@ class RideFragment : Fragment(), OnMapReadyCallback {
 
             // Move camera to clicked item
             val itemPosition = LatLng(clusterItem.position.latitude, clusterItem.position.longitude)
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(itemPosition, 18f))
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(itemPosition, 18f)).also {
+                val bikeOptionsMenu = layoutInflater.inflate(R.layout.menu_bike_options, null)
+                bikeOptionsMenu.findViewById<Button>(R.id.show_bike_details_button).setOnClickListener {
+                    startActivity(BikeDetailActivity.newIntent(context!!, clusterItem.bikeLockId))
+                }
+                val dialog = AlertDialog.Builder(context).create()
+                dialog.setView(bikeOptionsMenu)
 
-            val bikeOptionsMenu = layoutInflater.inflate(R.layout.menu_bike_options, null)
-            bikeOptionsMenu.findViewById<Button>(R.id.show_bike_details_button).setOnClickListener {
-                startActivity(BikeDetailActivity.newIntent(context!!, clusterItem.bikeLockId))
+                dialog.show()
             }
-            val dialog = AlertDialog.Builder(context).create()
-            dialog.setView(bikeOptionsMenu)
-
-            dialog.show()
 
             true
         }
@@ -198,11 +201,17 @@ class RideFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    class BikeIconRendered(private val context: Context, map: GoogleMap, clusterManager: ClusterManager<ClusterMarkerLocation>) :
-        DefaultClusterRenderer<ClusterMarkerLocation>(context, map, clusterManager) {
+    inner class BikeIconRendered(private val context: Context, private val map: GoogleMap, clusterManager: ClusterManager<ClusterMarkerLocation>) :
+        DefaultClusterRenderer<ClusterMarkerLocation>(context, map, clusterManager), GoogleMap.OnCameraMoveListener {
+
+        private var mCurrentZoomLevel: Float = 0f
 
         override fun onBeforeClusterItemRendered(item: ClusterMarkerLocation?, markerOptions: MarkerOptions?) {
             markerOptions?.icon(bitmapDescriptorFromVector(context, R.drawable.ic_bike_location_marker))
+        }
+
+        override fun onCameraMove() {
+            mCurrentZoomLevel = map.cameraPosition.zoom
         }
 
         private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
@@ -213,6 +222,18 @@ class RideFragment : Fragment(), OnMapReadyCallback {
             val canvas = Canvas(bitmap)
             vectorDrawable.draw(canvas)
             return BitmapDescriptorFactory.fromBitmap(bitmap)
+        }
+
+        override fun shouldRenderAsCluster(cluster: Cluster<ClusterMarkerLocation>?): Boolean {
+            // Determine if cluster will be created
+            var wouldCluster = super.shouldRenderAsCluster(cluster)
+
+            // Don't render cluster in super dense area if camera zoomed far in
+            if (wouldCluster) {
+                wouldCluster = mCurrentZoomLevel < 18f
+            }
+
+            return wouldCluster
         }
     }
 }
