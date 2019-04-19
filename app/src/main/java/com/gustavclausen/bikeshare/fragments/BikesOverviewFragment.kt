@@ -1,34 +1,48 @@
 package com.gustavclausen.bikeshare.fragments
 
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.adapters.BikesRecyclerAdapter
 import com.gustavclausen.bikeshare.models.Bike
-import io.realm.Realm
-import kotlinx.android.synthetic.main.fragment_bikes_overview.*
+import com.gustavclausen.bikeshare.viewmodel.BikeListViewModel
+import io.realm.RealmResults
 
 class BikesOverviewFragment : Fragment() {
 
+    private lateinit var mBikeListVM: BikeListViewModel
+    private lateinit var mBikeAdapter: BikesRecyclerAdapter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_bikes_overview, container, false)
+        val view = inflater.inflate(R.layout.fragment_bikes_overview, container, false)
+
+        mBikeAdapter = BikesRecyclerAdapter(context!!)
+
+        val bikesList = view.findViewById<RecyclerView>(R.id.bike_list)
+        bikesList.layoutManager = LinearLayoutManager(activity)
+        bikesList.adapter = mBikeAdapter
+
+        return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
-        overview_bikes_list.layoutManager = LinearLayoutManager(activity)
+        mBikeListVM = ViewModelProviders.of(this).get(BikeListViewModel::class.java)
+        mBikeAdapter.setBikesList(mBikeListVM.allBikes)
+    }
 
-        Realm.getInstanceAsync(Realm.getDefaultConfiguration()!!, object : Realm.Callback() {
-            override fun onSuccess(realm: Realm) {
-                val bikes = realm.where(Bike::class.java).findAllAsync() ?: return
+    override fun onResume() {
+        super.onResume()
 
-                overview_bikes_list.adapter = BikesRecyclerAdapter(context!!, bikes)
-            }
-        })
+        mBikeListVM.allBikes.addChangeListener { realm: RealmResults<Bike> ->
+            mBikeAdapter.setBikesList(realm)
+        }
     }
 }

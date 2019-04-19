@@ -14,9 +14,10 @@ import com.gustavclausen.bikeshare.activities.BikeDetailActivity
 import com.gustavclausen.bikeshare.models.Bike
 import io.realm.OrderedRealmCollection
 import io.realm.RealmRecyclerViewAdapter
+import io.realm.RealmResults
 
-class BikesRecyclerAdapter (private val context: Context, data: OrderedRealmCollection<Bike>) :
-        RealmRecyclerViewAdapter<Bike, BikesRecyclerAdapter.BikeHolder>(data, true) {
+class BikesRecyclerAdapter (private val context: Context) :
+        RealmRecyclerViewAdapter<Bike, BikesRecyclerAdapter.BikeHolder>(null, true) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BikeHolder =
         BikeHolder(LayoutInflater.from(context), parent)
@@ -29,6 +30,10 @@ class BikesRecyclerAdapter (private val context: Context, data: OrderedRealmColl
         holder.itemView.setOnClickListener {
             context.startActivity(BikeDetailActivity.newIntent(context, bike.lockId))
         }
+    }
+
+    fun setBikesList(bikeList: RealmResults<Bike>) {
+        updateData(bikeList)
     }
 
     inner class BikeHolder(inflater: LayoutInflater, parent: ViewGroup) :

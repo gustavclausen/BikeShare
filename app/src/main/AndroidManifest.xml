@@ -1,51 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.gustavclausen.bikeshare">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.gustavclausen.bikeshare">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.camera2"
-                     android:requiredFeature="false"
-                     tools:targetApi="o"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission
+        android:name="android.permission.camera2"
+        android:requiredFeature="false"
+        tools:targetApi="o" />
 
-    <application android:name=".BikeShareApplication"
-                 android:icon="@mipmap/ic_launcher"
-                 android:label="@string/app_name"
-                 android:roundIcon="@mipmap/ic_launcher_round"
-                 android:supportsRtl="true"
-                 android:theme="@style/AppTheme"
-                 android:allowBackup="false"
-                 tools:ignore="AllowBackup">
+    <application
+        android:name=".BikeShareApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="AllowBackup">
 
-        <meta-data android:name="com.google.android.geo.API_KEY"
-                   android:value="@string/google_maps_key"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
 
-        <activity android:name=".activities.BikeShareActivity"
-                  android:launchMode="singleTop">
+        <activity
+            android:name=".activities.BikeShareActivity"
+            android:launchMode="singleTop">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.RegisterBikeActivity"
-                  android:parentActivityName=".activities.BikeShareActivity"/>
+        <activity
+            android:name=".activities.RegisterBikeActivity"
+            android:parentActivityName=".activities.BikeShareActivity" />
 
-        <activity android:name=".activities.BikeDetailActivity"/>
+        <activity android:name=".activities.BikeDetailActivity" />
 
-        <provider android:name="android.support.v4.content.FileProvider"
-                  android:authorities="com.gustavclausen.bikeshare.fileprovider"
-                  android:exported="false"
-                  android:grantUriPermissions="true">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.gustavclausen.bikeshare.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
 
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
-                       android:resource="@xml/file_paths"/>
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
 
-        <service android:name=".services.FetchAddressIntentService"
-                 android:exported="false"/>
+        <service
+            android:name=".services.FetchAddressIntentService"
+            android:exported="false" />
     </application>
 </manifest>

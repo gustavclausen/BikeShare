@@ -14,4 +14,8 @@ open class Bike : RealmObject() {
     var priceHour: Int = 0
     var owner: User? = null
     var inUse: Boolean = false
+
+    object Fields {
+        const val LOCK_ID: String = "lockId"
+    }
 }

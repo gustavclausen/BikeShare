@@ -22,6 +22,7 @@ class BikeShareApplication : Application() {
             RealmConfiguration.Builder()
                 .name("bikeshare.realm")
                 .deleteRealmIfMigrationNeeded()
+                .initialData(DatabaseInitTransaction())
                 .build()
         )
 
