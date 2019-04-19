@@ -15,7 +15,7 @@ class BikeDao(val realm: Realm) {
         return where().findAllAsync()
     }
 
-    fun findById(lockId: String): Bike {
+    fun findByIdAsync(lockId: String): Bike {
         return where().equalTo(Bike.Fields.LOCK_ID, lockId).findFirstAsync()
     }
 }

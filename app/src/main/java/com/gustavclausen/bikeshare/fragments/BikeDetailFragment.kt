@@ -1,5 +1,6 @@
 package com.gustavclausen.bikeshare.fragments
 
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -7,8 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.gustavclausen.bikeshare.R
-import com.gustavclausen.bikeshare.models.BikeDB
-import io.realm.Realm
+import com.gustavclausen.bikeshare.viewmodel.BikeViewModel
 import kotlinx.android.synthetic.main.fragment_bike_detail.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -16,6 +16,7 @@ import org.jetbrains.anko.uiThread
 class BikeDetailFragment : Fragment() {
 
     private lateinit var mBikeLockId: String
+    private lateinit var mBikeVM: BikeViewModel
 
     companion object {
         private const val ARG_BIKE_LOCK_ID = "com.gustavclausen.bikeshare.arg_detail_bike_lock_id"
@@ -35,6 +36,7 @@ class BikeDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         mBikeLockId = arguments!!.getString(ARG_BIKE_LOCK_ID)
+        mBikeVM = ViewModelProviders.of(this, BikeViewModel.Factory(mBikeLockId)).get(BikeViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,20 +46,17 @@ class BikeDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Load picture of bike
-        //Glide.with(context!!)
-        //    .load(bike.picture)
-        //    .centerCrop()
-        //    .placeholder(R.drawable.ic_missing_image)
-        //    .into(bike_photo)
-
         // Load bike asynchronous from DB and update UI upon completion
         doAsync {
-            Realm.getDefaultInstance()
-            val bike = BikeDB.get().getBike(mBikeLockId)!!
+            val bike = mBikeVM.bike
 
             uiThread {
-
+                // Load picture of bike (asynchronous operation)
+                Glide.with(context!!)
+                     .load(bike.picture)
+                     .centerCrop()
+                     .placeholder(R.drawable.ic_missing_image)
+                     .into(bike_photo)
 
                 bike_type.text = bike.type
                 bike_price.text = bike.priceHour.toString()
