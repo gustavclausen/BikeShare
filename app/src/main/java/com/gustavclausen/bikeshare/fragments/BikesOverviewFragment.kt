@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.adapters.BikesRecyclerAdapter
-import com.gustavclausen.bikeshare.models.Bike
+import com.gustavclausen.bikeshare.entities.Bike
 import com.gustavclausen.bikeshare.viewmodel.BikeListViewModel
 import io.realm.RealmResults
 

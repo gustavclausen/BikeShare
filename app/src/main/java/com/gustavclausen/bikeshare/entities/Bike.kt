@@ -1,4 +1,4 @@
-package com.gustavclausen.bikeshare.models
+package com.gustavclausen.bikeshare.entities
 
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey

@@ -1,25 +1,34 @@
 package com.gustavclausen.bikeshare.viewmodel
 
 import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
 import com.gustavclausen.bikeshare.dao.BikeDao
+import com.gustavclausen.bikeshare.entities.Bike
+import com.gustavclausen.bikeshare.entities.User
+import com.gustavclausen.bikeshare.models.Coordinate
 import io.realm.Realm
 
-class BikeViewModel(lockId: String) : ViewModel() {
+class BikeViewModel : ViewModel() {
     private val realm = Realm.getDefaultInstance()
     private val dao = BikeDao(realm)
 
-    val bike = dao.findByIdAsync(lockId)
-
-    override fun onCleared() {
-        bike.removeAllChangeListeners()
-        realm.close()
+    fun getById(lockId: String): Bike? {
+        return dao.findById(lockId)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    class Factory(private val lockId: String) : ViewModelProvider.NewInstanceFactory() {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return BikeViewModel(lockId) as T
-        }
+    fun create(
+        lockId: String,
+        type: String,
+        priceHour: Int,
+        picture: ByteArray?,
+        owner: User,
+        lastKnownPosition: Coordinate,
+        locationAddress: String
+    ) {
+        dao.create(lockId, type, priceHour, picture, owner, lastKnownPosition, locationAddress)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        realm.close()
     }
 }

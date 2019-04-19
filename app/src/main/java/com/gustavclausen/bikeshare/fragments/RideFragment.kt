@@ -103,6 +103,7 @@ class RideFragment : Fragment(), OnMapReadyCallback {
         val clusterManager = ClusterManager<ClusterMarkerLocation>(context, mMap)
         val renderer = BikeIconRendered(context!!, mMap, clusterManager)
         clusterManager.renderer = renderer
+        renderer.minClusterSize = 2
         mMap.setOnCameraIdleListener(clusterManager)
         mMap.setOnCameraMoveListener(renderer)
         mMap.setOnMarkerClickListener(clusterManager)

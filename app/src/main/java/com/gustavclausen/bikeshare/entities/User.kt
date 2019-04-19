@@ -1,4 +1,4 @@
-package com.gustavclausen.bikeshare.models
+package com.gustavclausen.bikeshare.entities
 
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -11,5 +11,9 @@ open class User : RealmObject() {
 
     override fun toString(): String {
         return fullName
+    }
+
+    object Fields {
+        const val ID: String = "id"
     }
 }

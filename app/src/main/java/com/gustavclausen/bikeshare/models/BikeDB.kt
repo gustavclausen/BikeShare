@@ -1,6 +1,8 @@
 package com.gustavclausen.bikeshare.models
 
 import android.content.Context
+import com.gustavclausen.bikeshare.entities.Bike
+import com.gustavclausen.bikeshare.entities.User
 import io.realm.Realm
 
 class BikeDB private constructor() {
@@ -40,13 +42,4 @@ class BikeDB private constructor() {
     fun getBike(lockId: String): Bike? =
         Realm.getDefaultInstance().where(Bike::class.java).equalTo("lockId", lockId).findFirst()
 
-    fun getBikeTypes(context: Context) : Sequence<String> =
-        sequence {
-            // Read values from .txt-file found in assets folder
-            context.applicationContext.assets.open(BIKE_TYPES_ASSETS_PATH).bufferedReader().useLines { lines ->
-                lines.forEach {
-                    yield(it)
-                }
-            }
-        }
 }

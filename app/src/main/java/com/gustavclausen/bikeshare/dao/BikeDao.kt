@@ -1,6 +1,8 @@
 package com.gustavclausen.bikeshare.dao
 
-import com.gustavclausen.bikeshare.models.Bike
+import com.gustavclausen.bikeshare.entities.Bike
+import com.gustavclausen.bikeshare.entities.User
+import com.gustavclausen.bikeshare.models.Coordinate
 import io.realm.Realm
 import io.realm.RealmQuery
 import io.realm.RealmResults
@@ -15,7 +17,28 @@ class BikeDao(val realm: Realm) {
         return where().findAllAsync()
     }
 
-    fun findByIdAsync(lockId: String): Bike {
-        return where().equalTo(Bike.Fields.LOCK_ID, lockId).findFirstAsync()
+    fun findById(lockId: String): Bike? {
+        return where().equalTo(Bike.Fields.LOCK_ID, lockId).findFirst()
+    }
+
+    fun create(
+        lockId: String,
+        type: String,
+        priceHour: Int,
+        picture: ByteArray?,
+        owner: User,
+        lastKnownPosition: Coordinate,
+        locationAddress: String
+    ) {
+        realm.executeTransaction { realm ->
+            val bike = realm.createObject(Bike::class.java, lockId)
+            bike.type = type
+            bike.priceHour = priceHour
+            bike.picture = picture
+            bike.owner = owner
+            bike.lastKnownPositionLat = lastKnownPosition.lat
+            bike.lastKnownPositionLong = lastKnownPosition.long
+            bike.lastLocationAddress = locationAddress
+        }
     }
 }

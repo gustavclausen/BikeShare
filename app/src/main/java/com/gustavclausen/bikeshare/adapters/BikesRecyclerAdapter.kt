@@ -1,18 +1,13 @@
 package com.gustavclausen.bikeshare.adapters
 
 import android.content.Context
-import android.content.Intent
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.activities.BikeDetailActivity
-import com.gustavclausen.bikeshare.models.Bike
-import io.realm.OrderedRealmCollection
+import com.gustavclausen.bikeshare.entities.Bike
 import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 
