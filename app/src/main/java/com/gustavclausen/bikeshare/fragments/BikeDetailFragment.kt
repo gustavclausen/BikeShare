@@ -44,6 +44,14 @@ class BikeDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Load picture
         Glide.with(this).load(mBike.picture).centerCrop().placeholder(R.drawable.ic_missing_image).into(bike_photo)
+
+        bike_type_text.text = mBike.type
+        bike_price_text.text = mBike.priceHour.toString()
+        bike_availability_text.text = if (mBike.inUse) getString(R.string.in_use) else getString(R.string.not_in_use)
+        bike_address_text.text = mBike.lastLocationAddress
+        bike_owner_text.text = mBike.owner.toString()
+        bike_lock_id_text.text = mBike.lockId
     }
 }
