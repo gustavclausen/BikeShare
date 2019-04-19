@@ -24,7 +24,7 @@ class BikesOverviewFragment : Fragment() {
 
         mBikeAdapter = BikesRecyclerAdapter(context!!)
 
-        val bikesList = view.findViewById<RecyclerView>(R.id.bike_list)
+        val bikesList = view.findViewById(R.id.bike_list) as RecyclerView
         bikesList.layoutManager = LinearLayoutManager(activity)
         bikesList.adapter = mBikeAdapter
 
@@ -35,7 +35,6 @@ class BikesOverviewFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         mBikeListVM = ViewModelProviders.of(this).get(BikeListViewModel::class.java)
-        mBikeAdapter.setBikesList(mBikeListVM.allBikes)
     }
 
     override fun onResume() {

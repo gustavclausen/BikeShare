@@ -1,16 +1,16 @@
 package com.gustavclausen.bikeshare.fragments
 
 import android.os.Bundle
+import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.gustavclausen.bikeshare.R
-import kotlinx.android.synthetic.main.fragment_overview.*
-import java.util.ArrayList
+import java.util.*
 
 class OverviewFragment : Fragment() {
 
@@ -21,18 +21,20 @@ class OverviewFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_overview, container, false)
-    }
+        val view = inflater.inflate(R.layout.fragment_overview, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+        // Add fragments to adapter
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
         viewPagerAdapter.addFragment(BikesOverviewFragment(), getString(R.string.title_bikes_overview))
         viewPagerAdapter.addFragment(RidesOverviewFragment(), getString(R.string.title_rides_overview))
-        overview_view_pager_adapter.adapter = viewPagerAdapter
 
-        overview_tabs.setupWithViewPager(overview_view_pager_adapter)
+        val viewPager = view.findViewById(R.id.view_pager) as ViewPager
+        viewPager.adapter = viewPagerAdapter
+
+        // Setup tab layout with adapter
+        view.findViewById<TabLayout>(R.id.overview_tabs).setupWithViewPager(viewPager)
+
+        return view
     }
 
     class ViewPagerAdapter(fragmentManager: FragmentManager): FragmentPagerAdapter(fragmentManager) {
@@ -44,7 +46,7 @@ class OverviewFragment : Fragment() {
 
         override fun getCount() = mFragmentList.size
 
-        fun addFragment(fragment: Fragment, title: String) {
+        fun addFragment (fragment: Fragment, title: String) {
             mFragmentList.add(fragment)
             mFragmentTitleList.add(title)
         }

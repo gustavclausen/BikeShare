@@ -12,8 +12,9 @@ import kotlinx.android.synthetic.main.activity_bike_share.*
 
 class BikeShareActivity : AppCompatActivity() {
 
+    // Listener for menu items in bottom navigation bar
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        // Return if user presses the same navigation item
+        // Return (i.e. do nothing) if user presses the same navigation item
         if (bottom_navigation.selectedItemId == item.itemId)
             return@OnNavigationItemSelectedListener false
 
