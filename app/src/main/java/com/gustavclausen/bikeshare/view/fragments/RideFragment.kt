@@ -42,6 +42,7 @@ class RideFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var mBikeVM: BikeViewModel
     private lateinit var mMap: GoogleMap
+    private lateinit var mClusterManager: ClusterManager<ClusterMarkerLocation>
     private var mClickedMarker: ClusterMarkerLocation? = null
     private var mLocationPermissionDenied: Boolean = false
 
@@ -142,38 +143,28 @@ class RideFragment : Fragment(), OnMapReadyCallback {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) return
 
-        if (PermissionUtils.isPermissionGranted(permissions, grantResults, ACCESS_FINE_LOCATION))
+        if (PermissionUtils.isPermissionGranted(permissions, grantResults, ACCESS_FINE_LOCATION)) {
             enableLocation()
-        else
-        // Set variable to display the missing permission error dialog when this fragment resumes
+        } else {
+            // Set variable to display the missing permission error dialog when this fragment resumes
             mLocationPermissionDenied = true
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.setMaxZoomPreference(35.0f)
 
-        enableLocation()
-
-        // Move to last saved camera location
-        val lastPosition = MapStateManager.getSavedMapState(context!!)
-        val update = CameraUpdateFactory.newCameraPosition(lastPosition)
-        mMap.moveCamera(update)
-
-        pinAvailableBikes()
-    }
-
-    private fun pinAvailableBikes() {
-        val clusterManager = ClusterManager<ClusterMarkerLocation>(context, mMap)
-        val renderer = CustomClusterRenderer(context!!, mMap, clusterManager)
+        mClusterManager = ClusterManager(context, mMap)
+        val renderer = CustomClusterRenderer(context!!, mMap, mClusterManager)
         renderer.minClusterSize = 2
-        clusterManager.renderer = renderer
+        mClusterManager.renderer = renderer
 
-        mMap.setOnCameraIdleListener(clusterManager)
-        mMap.setOnMarkerClickListener(clusterManager)
+        mMap.setOnCameraIdleListener(mClusterManager)
+        mMap.setOnMarkerClickListener(mClusterManager)
         mMap.setOnCameraMoveListener(renderer)
 
-        clusterManager.setOnClusterItemClickListener { marker ->
+        mClusterManager.setOnClusterItemClickListener { marker ->
             mClickedMarker = marker
 
             // Move camera to clicked marker
@@ -195,17 +186,23 @@ class RideFragment : Fragment(), OnMapReadyCallback {
             true
         }
 
-        // Pin available bikes
-        mBikeVM.allBikes.addChangeListener { bikes ->
-            bikes.toList().forEach { bike ->
-                if (!bike.inUse) {
-                    val bikeMarker = ClusterMarkerLocation(
-                        LatLng(bike.lastKnownPositionLat, bike.lastKnownPositionLong),
-                        bike.lockId
-                    )
-                    clusterManager.addItem(bikeMarker)
-                }
-            }
+        enableLocation()
+
+        // Move to last saved camera location
+        val lastPosition = MapStateManager.getSavedMapState(context!!)
+        val update = CameraUpdateFactory.newCameraPosition(lastPosition)
+        mMap.moveCamera(update)
+
+        markAvailableBikes()
+    }
+
+    private fun markAvailableBikes() {
+        mBikeVM.availableBikes.forEach { bike ->
+            val bikeMarker = ClusterMarkerLocation(
+                LatLng(bike.lastKnownPositionLat, bike.lastKnownPositionLong),
+                bike.lockId
+            )
+            mClusterManager.addItem(bikeMarker)
         }
     }
 

@@ -22,26 +22,15 @@ class BikesOverviewFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_bikes_overview, container, false)
 
+        mBikeVM = ViewModelProviders.of(this).get(BikeViewModel::class.java)
+
         mBikeAdapter = BikesRecyclerAdapter(context!!)
+        mBikeAdapter.setBikesList(mBikeVM.allBikes)
 
         val bikesList = view.findViewById(R.id.bike_list) as RecyclerView
         bikesList.layoutManager = LinearLayoutManager(activity)
         bikesList.adapter = mBikeAdapter
 
         return view
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        mBikeVM = ViewModelProviders.of(this).get(BikeViewModel::class.java)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        mBikeVM.allBikes.addChangeListener { realm: RealmResults<Bike> ->
-            mBikeAdapter.setBikesList(realm)
-        }
     }
 }

@@ -21,6 +21,10 @@ class BikeDao(val realm: Realm) {
         return where().equalTo(Bike.Fields.LOCK_ID, lockId).findFirst()
     }
 
+    fun findAllAvailableBikes(): List<Bike> {
+        return where().equalTo(Bike.Fields.IN_USE, false).findAllAsync()
+    }
+
     fun create(
         lockId: String,
         type: String,

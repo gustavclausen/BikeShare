@@ -17,5 +17,6 @@ open class Bike : RealmObject() {
 
     object Fields {
         const val LOCK_ID: String = "lockId"
+        const val IN_USE: String = "inUse"
     }
 }
