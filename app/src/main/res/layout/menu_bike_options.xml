@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
     android:orientation="vertical"
     android:padding="20dp">
 
     <Button
         android:id="@+id/show_bike_details_button"
-        android:layout_width="match_parent"
+        android:layout_width="225dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/button_show_bike_details" />
 
     <Button
-        android:id="@+id/rent_bike_button"
-        android:layout_width="match_parent"
+        android:id="@+id/unlock_ride_button"
+        android:layout_width="225dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/button_rent_bike" />
+        android:drawableStart="@drawable/ic_bluetooth"
+        android:drawablePadding="5dp"
+        android:text="@string/button_start_ride" />
 
 </LinearLayout>

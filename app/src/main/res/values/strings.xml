@@ -59,5 +59,6 @@
     <string name="button_view_payments">View payments</string>
     <string name="title_bike_detail">Bike</string>
     <string name="button_show_bike_details">Show bike details</string>
-    <string name="button_rent_bike">Rent bike</string>
+    <string name="button_start_ride">Unlock to start ride</string>
+    <string name="pairing_success">Pairing succeeded. Bike is now unlocked.</string>
 </resources>

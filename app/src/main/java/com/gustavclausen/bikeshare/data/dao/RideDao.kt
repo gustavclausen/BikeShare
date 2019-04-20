@@ -14,10 +14,6 @@ class RideDao(val realm: Realm) {
         return realm.where(Ride::class.java)
     }
 
-    fun findAllAsync(): RealmResults<Ride> {
-        return where().findAllAsync()
-    }
-
     fun findById(id: String): Ride? {
         return where().equalTo(Ride.Fields.ID, id).findFirst()
     }
@@ -26,16 +22,21 @@ class RideDao(val realm: Realm) {
         return where().equalTo(Ride.Fields.IS_ENDED, true).findAllAsync()
     }
 
-    // Create to start ride
+    /**
+     * Create to start ride
+     *
+     * Returns id of newly created ride
+     */
     fun create(
-        id: String,
         bike: Bike,
         rider: User,
         startPositionLat: Double,
         startPositionLong: Double,
         startPositionAddress: String,
         startTime: Date
-    ) {
+    ): String {
+        val id: String = UUID.randomUUID().toString()
+
         realm.executeTransaction { realm ->
             val ride = realm.createObject(Ride::class.java, id)
             ride.bike = bike
@@ -45,6 +46,8 @@ class RideDao(val realm: Realm) {
             ride.startPositionAddress = startPositionAddress
             ride.startTime = startTime
         }
+
+        return id
     }
 
     // Update to end ride

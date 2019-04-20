@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
@@ -22,17 +23,23 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
-import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
-import com.gustavclausen.bikeshare.utils.PermissionUtils
+import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
+import com.gustavclausen.bikeshare.utils.PermissionUtils
 import com.gustavclausen.bikeshare.view.activities.BikeDetailActivity
+import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.view.utils.MapStateManager
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
+import com.gustavclausen.bikeshare.viewmodels.RideViewModel
+import com.gustavclausen.bikeshare.viewmodels.UserViewModel
 
 /*
  * Inspiration source (accessed 2019-04-10):
@@ -41,6 +48,8 @@ import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 class RideFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var mBikeVM: BikeViewModel
+    private lateinit var mRideVM: RideViewModel
+    private lateinit var mUserVM: UserViewModel
     private lateinit var mMap: GoogleMap
     private lateinit var mClusterManager: ClusterManager<ClusterMarkerLocation>
     private var mClickedMarker: ClusterMarkerLocation? = null
@@ -73,6 +82,8 @@ class RideFragment : Fragment(), OnMapReadyCallback {
         super.onActivityCreated(savedInstanceState)
 
         mBikeVM = ViewModelProviders.of(this).get(BikeViewModel::class.java)
+        mRideVM = ViewModelProviders.of(this).get(RideViewModel::class.java)
+        mUserVM = ViewModelProviders.of(this).get(UserViewModel::class.java)
     }
 
     override fun onResume() {
@@ -140,6 +151,44 @@ class RideFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun showOptionsMenu() {
+        val optionsDialog = AlertDialog.Builder(context).create()
+
+        // Show options menu
+        val bikeOptionsMenu = layoutInflater.inflate(R.layout.menu_bike_options, null)
+        // Show details button
+        bikeOptionsMenu.findViewById<Button>(R.id.show_bike_details_button).setOnClickListener {
+            // Open detail view of bike when 'Show details'-button is clicked
+            startActivity(BikeDetailActivity.newIntent(context!!, mClickedMarker!!.bikeLockId))
+        }
+        // Unlock ride button
+        bikeOptionsMenu.findViewById<Button>(R.id.unlock_ride_button).setOnClickListener {
+            // Mock Bluetooth pairing to unlock bike
+            Toast.makeText(context!!, getString(R.string.pairing_success), Toast.LENGTH_SHORT).show()
+            optionsDialog.cancel()
+            startRideHandling()
+        }
+        optionsDialog.setView(bikeOptionsMenu)
+        optionsDialog.show()
+    }
+
+    private fun startRideHandling() {
+        val userPreferences = context!!.getSharedPreferences(BikeShareApplication.PREF_USER_FILE, Context.MODE_PRIVATE)
+        val userId = userPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
+        val user = mUserVM.getById(userId)!!
+
+        val selectedBike = mBikeVM.getById(mClickedMarker!!.bikeLockId)!!
+        val newRideId = mRideVM.startRide(
+            selectedBike,
+            user,
+            selectedBike.lastKnownPositionLat,
+            selectedBike.lastKnownPositionLong,
+            selectedBike.lastLocationAddress
+        )
+
+        RideHandlingFragment.newInstance(newRideId)
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) return
 
@@ -169,19 +218,8 @@ class RideFragment : Fragment(), OnMapReadyCallback {
 
             // Move camera to clicked marker
             val markerPosition = LatLng(marker.position.latitude, marker.position.longitude)
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(markerPosition, 18f)).also {
-                // Show options menu
-                val bikeOptionsMenu = layoutInflater.inflate(R.layout.menu_bike_options, null)
-                bikeOptionsMenu.findViewById<Button>(R.id.show_bike_details_button).setOnClickListener {
-                    // Open detail view of bike when 'Show details'-button is clicked
-                    startActivity(BikeDetailActivity.newIntent(context!!, marker.bikeLockId))
-                }
-
-                val optionsDialog = AlertDialog.Builder(context).create()
-                optionsDialog.setView(bikeOptionsMenu)
-
-                optionsDialog.show()
-            }
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerPosition, 18f))
+            showOptionsMenu()
 
             true
         }
