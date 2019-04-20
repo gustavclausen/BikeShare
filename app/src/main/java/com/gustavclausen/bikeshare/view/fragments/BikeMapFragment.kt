@@ -46,15 +46,16 @@ import com.gustavclausen.bikeshare.viewmodels.UserViewModel
  * Inspiration source (accessed 2019-04-10):
  * https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/main/java/com/example/mapdemo
  */
-class RideFragment : Fragment(), OnMapReadyCallback {
+class BikeMapFragment : Fragment(), OnMapReadyCallback {
 
-    private lateinit var mBikeVM: BikeViewModel
-    private lateinit var mRideVM: RideViewModel
-    private lateinit var mUserVM: UserViewModel
     private lateinit var mMap: GoogleMap
     private lateinit var mClusterManager: ClusterManager<ClusterMarkerLocation>
     private var mClickedMarker: ClusterMarkerLocation? = null
     private var mLocationPermissionDenied: Boolean = false
+
+    private lateinit var mBikeVM: BikeViewModel
+    private lateinit var mRideVM: RideViewModel
+    private lateinit var mUserVM: UserViewModel
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -63,7 +64,7 @@ class RideFragment : Fragment(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        activity?.title = getString(R.string.title_ride) // Set toolbar title of parent activity
+        activity?.title = getString(R.string.title_bike_map) // Set toolbar title of parent activity
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -174,13 +175,15 @@ class RideFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun startRideHandling() {
-        val userPreferences = context!!.getSharedPreferences(BikeShareApplication.PREF_USER_FILE, Context.MODE_PRIVATE)
-        val userId = userPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
+        val bikeShareActivity = (activity as BikeShareActivity)
+
+        // Get current user
+        val userId = bikeShareActivity.mUserPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
         val user = mUserVM.getById(userId)!!
 
-
+        // Create ride
         val selectedBike = mBikeVM.getById(mClickedMarker!!.bikeLockId)!!
-        val newRideId = mRideVM.startRide(
+        val rideId = mRideVM.startRide(
             selectedBike,
             user,
             selectedBike.lastKnownPositionLat,
@@ -188,8 +191,7 @@ class RideFragment : Fragment(), OnMapReadyCallback {
             selectedBike.lastLocationAddress
         )
 
-        val bikeShareActivity = (activity as BikeShareActivity)
-        bikeShareActivity.updateLastRide(newRideId)
+        bikeShareActivity.updateLastRide(rideId)
         bikeShareActivity.loadRideFragment()
     }
 

@@ -61,4 +61,9 @@
     <string name="button_show_bike_details">Show bike details</string>
     <string name="button_start_ride">Unlock to start ride</string>
     <string name="pairing_success">Pairing succeeded. Bike is now unlocked.</string>
+    <string name="title_bike_map">Bike map</string>
+    <string name="start_address_label">Start address</string>
+    <string name="start_time_label">Start time</string>
+    <string name="end_ride_button">End ride</string>
+    <string name="date_picker_title">Pick a date</string>
 </resources>

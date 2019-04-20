@@ -11,7 +11,7 @@ import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.view.fragments.AccountFragment
 import com.gustavclausen.bikeshare.view.fragments.OverviewFragment
-import com.gustavclausen.bikeshare.view.fragments.RideFragment
+import com.gustavclausen.bikeshare.view.fragments.BikeMapFragment
 import com.gustavclausen.bikeshare.view.fragments.RideHandlingFragment
 import com.gustavclausen.bikeshare.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_bike_share.*
@@ -19,7 +19,7 @@ import org.jetbrains.anko.doAsync
 
 class BikeShareActivity : AppCompatActivity() {
 
-    private lateinit var mUserPreferences: SharedPreferences
+    lateinit var mUserPreferences: SharedPreferences
 
     // Listener for menu items in bottom navigation bar
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -93,7 +93,7 @@ class BikeShareActivity : AppCompatActivity() {
 
         // User has not a on-going ride
         if (lastRideId == null) {
-            loadFragment(RideFragment())
+            loadFragment(BikeMapFragment())
         } else {
             loadFragment(RideHandlingFragment.newInstance(lastRideId))
         }
