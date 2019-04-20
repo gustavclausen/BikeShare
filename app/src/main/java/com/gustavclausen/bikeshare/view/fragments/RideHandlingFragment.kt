@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.*
 import com.gustavclausen.bikeshare.R
+import com.gustavclausen.bikeshare.data.entities.Coordinate
+import com.gustavclausen.bikeshare.view.activities.LocationPickerActivity
 import com.gustavclausen.bikeshare.view.utils.DateFormatter
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
 import kotlinx.android.synthetic.main.fragment_ride_handling.*
@@ -18,6 +20,7 @@ class RideHandlingFragment : Fragment() {
     private lateinit var mRideVM: RideViewModel
 
     private var mEndDateTime = Calendar.getInstance()
+    private var mEndLocation: Coordinate? = null
 
     companion object {
         private const val SAVED_END_DATE_TIME = "savedEndDateTime"
@@ -27,6 +30,7 @@ class RideHandlingFragment : Fragment() {
         private const val DIALOG_TIME = "DialogTime"
         private const val DATE_REQUEST_CODE = 0
         private const val TIME_REQUEST_CODE = 1
+        private const val END_LOCATION_REQUEST_CODE = 2
 
         fun newInstance(rideId: String): RideHandlingFragment {
             val args = Bundle()
@@ -78,6 +82,12 @@ class RideHandlingFragment : Fragment() {
             picker.show(fragmentManager, DIALOG_TIME)
         }
 
+        pick_end_location_button.setOnClickListener {
+            val intent = Intent(context, LocationPickerActivity::class.java)
+            intent.putExtra(LocationPickerActivity.ARG_START_LOCATION, Coordinate(ride.startPositionLat, ride.startPositionLong))
+            startActivityForResult(intent, END_LOCATION_REQUEST_CODE)
+        }
+
         updateUI()
     }
 
@@ -96,6 +106,9 @@ class RideHandlingFragment : Fragment() {
             }
             TIME_REQUEST_CODE -> {
                 mEndDateTime = data!!.getSerializableExtra(TimePickerFragment.EXTRA_TIME) as Calendar
+            }
+            END_LOCATION_REQUEST_CODE -> {
+                mEndLocation = data!!.getSerializableExtra(LocationPickerActivity.EXTRA_END_LOCATION) as Coordinate
             }
         }
 
