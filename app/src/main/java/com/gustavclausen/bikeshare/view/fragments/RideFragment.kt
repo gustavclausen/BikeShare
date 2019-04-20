@@ -35,6 +35,7 @@ import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.utils.PermissionUtils
 import com.gustavclausen.bikeshare.view.activities.BikeDetailActivity
+import com.gustavclausen.bikeshare.view.activities.BikeShareActivity
 import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.view.utils.MapStateManager
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
@@ -177,6 +178,7 @@ class RideFragment : Fragment(), OnMapReadyCallback {
         val userId = userPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
         val user = mUserVM.getById(userId)!!
 
+
         val selectedBike = mBikeVM.getById(mClickedMarker!!.bikeLockId)!!
         val newRideId = mRideVM.startRide(
             selectedBike,
@@ -186,7 +188,9 @@ class RideFragment : Fragment(), OnMapReadyCallback {
             selectedBike.lastLocationAddress
         )
 
-        RideHandlingFragment.newInstance(newRideId)
+        val bikeShareActivity = (activity as BikeShareActivity)
+        bikeShareActivity.updateLastRide(newRideId)
+        bikeShareActivity.loadRideFragment()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
