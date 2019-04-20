@@ -12,7 +12,7 @@ class BikeViewModel : ViewModel() {
     private val dao = BikeDao(realm)
 
     val allBikes = dao.findAllAsync()
-    val availableBikes = dao.findAllAvailableBikes()
+    val availableBikes = dao.findAllAvailableBikesAsync()
 
     fun getById(lockId: String): Bike? {
         return dao.findById(lockId)
