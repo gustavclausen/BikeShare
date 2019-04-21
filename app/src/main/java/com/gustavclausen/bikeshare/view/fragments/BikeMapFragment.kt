@@ -181,8 +181,10 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
         val userId = bikeShareActivity.mUserPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
         val user = mUserVM.getById(userId)!!
 
+        val bikeLockId = mClickedMarker!!.bikeLockId
+
         // Create ride
-        val selectedBike = mBikeVM.getById(mClickedMarker!!.bikeLockId)!!
+        val selectedBike = mBikeVM.getById(bikeLockId)!!
         val rideId = mRideVM.startRide(
             selectedBike,
             user,
@@ -190,6 +192,9 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
             selectedBike.lastKnownPositionLong,
             selectedBike.lastLocationAddress
         )
+
+        // Update bike to occupied
+        mBikeVM.updateAvailability(bikeLockId, inUse = true)
 
         bikeShareActivity.updateLastRide(rideId)
         bikeShareActivity.loadRideFragment()

@@ -17,6 +17,7 @@ import com.gustavclausen.bikeshare.services.FetchAddressIntentService
 import com.gustavclausen.bikeshare.view.activities.BikeShareActivity
 import com.gustavclausen.bikeshare.view.activities.LocationPickerActivity
 import com.gustavclausen.bikeshare.view.utils.DateFormatter
+import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
 import kotlinx.android.synthetic.main.fragment_ride_handling.*
 import java.util.*
@@ -25,6 +26,7 @@ class RideHandlingFragment : Fragment() {
 
     private lateinit var mRideId: String
     private lateinit var mRideVM: RideViewModel
+    private lateinit var mBikeVM: BikeViewModel
 
     private var mEndDateTime = Calendar.getInstance()
     private var mEndLocation: Coordinate? = null
@@ -68,6 +70,7 @@ class RideHandlingFragment : Fragment() {
         mRideId = arguments!!.getString(ARG_RIDE_ID)
 
         mRideVM = ViewModelProviders.of(this).get(RideViewModel::class.java)
+        mBikeVM = ViewModelProviders.of(this).get(BikeViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -179,6 +182,12 @@ class RideHandlingFragment : Fragment() {
             finalPrice = 10.0, // TODO: Calculate
             endTime = mEndDateTime.time
         )
+
+        val bikeLockId = mRideVM.getById(mRideId)!!.bike!!.lockId
+
+        // Update status of bike
+        mBikeVM.updateAvailability(bikeLockId, inUse = false)
+        mBikeVM.updateLastKnownLocation(bikeLockId, mEndLocation!!, mEndLocationAddress!!)
 
         val bikeShareActivity = (activity as BikeShareActivity)
         bikeShareActivity.updateLastRide(null)
