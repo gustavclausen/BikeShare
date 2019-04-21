@@ -82,7 +82,7 @@ class BikeShareActivity : AppCompatActivity() {
         }
     }
 
-    fun updateLastRide(rideId: String) {
+    fun updateLastRide(rideId: String?) {
         val editor = mUserPreferences.edit()
         editor.putString(BikeShareApplication.PREF_LAST_RIDE_ID, rideId)
         editor.apply()

@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import android.util.Log
 import com.gustavclausen.bikeshare.R
+import com.gustavclausen.bikeshare.data.entities.Coordinate
 import java.io.IOException
 import java.util.*
 
@@ -36,7 +37,7 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
         intent ?: return
 
         // Get the location passed to this service through an extra
-        val location = intent.getParcelableExtra<Location>(Constants.EXTRA_LOCATION_DATA)
+        val location = intent.getSerializableExtra(Constants.EXTRA_LOCATION_DATA) as Coordinate
 
         // Get result receiver passed to this service through an extra
         mReceiver = intent.getParcelableExtra(Constants.EXTRA_RECEIVER) ?: return
@@ -47,7 +48,7 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
 
         try {
             // Single address
-            addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+            addresses = geocoder.getFromLocation(location.lat, location.long, 1)
         } catch (ioe: IOException) {
             // Catch network or other I/O problems
             val errorMessage = getString(R.string.fetch_address_service_not_available)
@@ -61,7 +62,7 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
             Log.e(
                 Constants.TAG,
                 "Invalid latitude or longitude values:\n" +
-                "Latitude = ${location.latitude}, Longitude =  ${location.longitude}",
+                "Latitude = ${location.lat}, Longitude =  ${location.long}",
                 iae
             )
 

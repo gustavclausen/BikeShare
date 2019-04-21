@@ -66,7 +66,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:text="End time"
+            android:text="@string/end_time_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ride_start_time" />
@@ -77,7 +77,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:drawableLeft="@drawable/ic_calendar"
+            android:drawableStart="@drawable/ic_calendar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/end_time_label" />
 
@@ -87,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:drawableLeft="@drawable/ic_time"
+            android:drawableStart="@drawable/ic_time"
             android:drawablePadding="@dimen/button_icon_padding"
             app:layout_constraintStart_toEndOf="@+id/ride_end_date_button"
             app:layout_constraintTop_toBottomOf="@+id/end_time_label" />
@@ -100,7 +100,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:text="End location"
+            android:text="@string/end_location_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ride_end_date_button" />
@@ -111,11 +111,25 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:drawableLeft="@drawable/ic_location"
+            android:drawableStart="@drawable/ic_location"
             android:drawablePadding="@dimen/button_icon_padding"
-            android:text="Pick end location"
+            android:text="@string/pick_end_location_button_label"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/end_location_label" />
+
+        <TextView
+            android:id="@+id/end_location_address"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/pick_end_location_button"
+            app:layout_constraintTop_toBottomOf="@+id/pick_end_location_button" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

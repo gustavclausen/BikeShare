@@ -66,4 +66,10 @@
     <string name="start_time_label">Start time</string>
     <string name="end_ride_button">End ride</string>
     <string name="date_picker_title">Pick a date</string>
+    <string name="pick_location_button">Pick location</string>
+    <string name="no_location_picked">No end location selected. Please select one on the map.</string>
+    <string name="location_picker_title">Location picker</string>
+    <string name="end_time_label">End time</string>
+    <string name="end_location_label">End location</string>
+    <string name="pick_end_location_button_label">Pick end location</string>
 </resources>

@@ -106,7 +106,7 @@ class RegisterBikeFragment : Fragment() {
                 mLocation = Coordinate(location.latitude, location.longitude)
 
                 // Get address from coordinates
-                fetchLocationAddress(location)
+                fetchLocationAddress(mLocation!!)
             }
         }
     }
@@ -252,10 +252,10 @@ class RegisterBikeFragment : Fragment() {
         }
     }
 
-    private fun fetchLocationAddress(location: Location) {
+    private fun fetchLocationAddress(coordinate: Coordinate) {
         val intent = Intent(context, FetchAddressIntentService::class.java).apply {
             putExtra(FetchAddressIntentService.Constants.EXTRA_RECEIVER, AddressResultReceiver())
-            putExtra(FetchAddressIntentService.Constants.EXTRA_LOCATION_DATA, location)
+            putExtra(FetchAddressIntentService.Constants.EXTRA_LOCATION_DATA, coordinate)
         }
 
         context?.startService(intent)
