@@ -171,19 +171,32 @@ class RideHandlingFragment : Fragment() {
         context?.startService(intent)
     }
 
+    // TODO: Validate that everything is set
     private fun endRide() {
-        // TODO: Validate that everything is set
+        val ride = mRideVM.getById(mRideId)!!
+        val startLocation = Location("start")
+        startLocation.latitude = ride.startPositionLat
+        startLocation.longitude = ride.startPositionLong
+
+        val endLocation = Location("end")
+        endLocation.latitude = mEndLocation!!.lat
+        endLocation.longitude = mEndLocation!!.long
+
+        val distance = startLocation.distanceTo(endLocation).toDouble()
+
         mRideVM.endRide(
             id = mRideId,
             endPositionLat = mEndLocation!!.lat,
             endPositionLong = mEndLocation!!.long,
             endPositionAddress = mEndLocationAddress!!,
-            distance = 10.0, // TODO: Calculate
-            finalPrice = 10.0, // TODO: Calculate
+            distance = distance,
+            finalPrice = distance * 0.002f,
             endTime = mEndDateTime.time
         )
 
-        val bikeLockId = mRideVM.getById(mRideId)!!.bike!!.lockId
+        Toast.makeText(context!!, distance.toString(), Toast.LENGTH_SHORT).show()
+
+        val bikeLockId = ride.bike!!.lockId
 
         // Update status of bike
         mBikeVM.updateAvailability(bikeLockId, inUse = false)
