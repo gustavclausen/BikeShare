@@ -61,7 +61,7 @@ class RideHandlingFragment : Fragment() {
 
         if (savedInstanceState != null) {
             mEndDateTime = savedInstanceState.getSerializable(SAVED_END_DATE_TIME) as Calendar
-            mEndLocation = savedInstanceState.getSerializable(SAVED_END_LOCATION) as Coordinate
+            mEndLocation = savedInstanceState.getSerializable(SAVED_END_LOCATION) as Coordinate?
             mEndLocationAddress = savedInstanceState.getString(SAVED_END_LOCATION_ADDRESS)
         }
 
@@ -171,9 +171,21 @@ class RideHandlingFragment : Fragment() {
         context?.startService(intent)
     }
 
-    // TODO: Validate that everything is set
     private fun endRide() {
         val ride = mRideVM.getById(mRideId)!!
+
+        // Validate that end date time is after start date time
+        if (mEndDateTime.time < ride.startTime) {
+            Toast.makeText(context!!, getString(R.string.date_time_input_error), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Validate that end location is selected
+        if (mEndLocation == null) {
+            Toast.makeText(context!!, getString(R.string.missing_end_location_error), Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val startLocation = Location("start")
         startLocation.latitude = ride.startPositionLat
         startLocation.longitude = ride.startPositionLong

@@ -23,10 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
@@ -223,6 +220,19 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
         mMap.setOnCameraIdleListener(mClusterManager)
         mMap.setOnMarkerClickListener(mClusterManager)
         mMap.setOnCameraMoveListener(renderer)
+
+        val top = LatLng(55.711809, 12.468891)
+        val bottom = LatLng(55.557473, 12.682431)
+
+        val builder = LatLngBounds.builder()
+
+        builder.include(top)
+        builder.include(bottom)
+
+        val bounds = builder.build()
+
+        mMap.setLatLngBoundsForCameraTarget(bounds)
+        mMap.setMinZoomPreference(11f)
 
         mClusterManager.setOnClusterItemClickListener { marker ->
             mClickedMarker = marker
