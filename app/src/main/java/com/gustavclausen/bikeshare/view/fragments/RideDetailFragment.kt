@@ -56,7 +56,7 @@ class RideDetailFragment : Fragment() {
         start_time.text = DateFormatter.fullTimestamp(ride.startTime)
         end_address.text = ride.endPositionAddress
         end_time.text = DateFormatter.fullTimestamp(ride.endTime)
-        ride_distance.text = getString(R.string.distance_meter_text, ride.distanceKm)
+        ride_distance.text = getString(R.string.distance_km_text, ride.distanceKm)
         ride_price.text = getString(R.string.money_amount_text, ride.finalPrice)
         ride_id.text = ride.id
     }

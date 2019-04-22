@@ -29,13 +29,13 @@
         android:ellipsize="end"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ride_price"
+        app:layout_constraintEnd_toStartOf="@+id/ride_distance"
         app:layout_constraintStart_toEndOf="@id/ride_start_address"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/ride_price"
-        android:layout_width="75dp"
+        android:id="@+id/ride_distance"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"

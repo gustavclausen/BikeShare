@@ -41,8 +41,8 @@ class RidesRecyclerAdapter(private val context: Context) :
             val endAddress = itemView.findViewById(R.id.ride_end_address) as TextView
             endAddress.text = ride.endPositionAddress
 
-            val price = itemView.findViewById(R.id.ride_price) as TextView
-            price.text = context.getString(R.string.money_amount_text, ride.finalPrice)
+            val distance = itemView.findViewById(R.id.ride_distance) as TextView
+            distance.text = context.getString(R.string.distance_km_text, ride.distanceKm)
         }
     }
 }
