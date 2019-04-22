@@ -23,10 +23,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <activity android:name=".view.activities.LocationPickerActivity" />
         <activity
-            android:name="com.gustavclausen.bikeshare.view.activities.BikeShareActivity"
+            android:name=".view.activities.BikeShareActivity"
             android:launchMode="singleTop">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -34,19 +34,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.gustavclausen.bikeshare.view.activities.RegisterBikeActivity"
-            android:parentActivityName="com.gustavclausen.bikeshare.view.activities.BikeShareActivity" />
-
-        <activity android:name="com.gustavclausen.bikeshare.view.activities.BikeDetailActivity" />
+            android:name=".view.activities.RegisterBikeActivity"
+            android:parentActivityName=".view.activities.BikeShareActivity" />
+        <activity android:name=".view.activities.BikeDetailActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.gustavclausen.bikeshare.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
@@ -56,4 +53,5 @@
             android:name=".services.FetchAddressIntentService"
             android:exported="false" />
     </application>
+
 </manifest>

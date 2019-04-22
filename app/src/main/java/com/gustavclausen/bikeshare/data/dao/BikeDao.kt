@@ -45,4 +45,21 @@ class BikeDao(val realm: Realm) {
             bike.lastLocationAddress = locationAddress
         }
     }
+
+
+    fun updateAvailability(lockId: String, inUse: Boolean) {
+        realm.executeTransaction {
+            val bike = findById(lockId) ?: return@executeTransaction
+            bike.inUse = inUse
+        }
+    }
+
+    fun updateLastKnownLocation(lockId: String, lastKnownPosition: Coordinate, lastKnownAddress: String) {
+        realm.executeTransaction {
+            val bike = findById(lockId) ?: return@executeTransaction
+            bike.lastKnownPositionLat = lastKnownPosition.lat
+            bike.lastKnownPositionLong = lastKnownPosition.long
+            bike.lastLocationAddress = lastKnownAddress
+        }
+    }
 }

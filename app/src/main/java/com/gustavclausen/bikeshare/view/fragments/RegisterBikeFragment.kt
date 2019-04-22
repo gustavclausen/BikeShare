@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.location.Location
 import android.media.ExifInterface
 import android.os.*
 import android.provider.MediaStore
@@ -26,10 +25,10 @@ import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
-import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.data.entities.Coordinate
 import com.gustavclausen.bikeshare.services.FetchAddressIntentService
 import com.gustavclausen.bikeshare.utils.PermissionUtils
+import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_register_bike.*
@@ -106,7 +105,7 @@ class RegisterBikeFragment : Fragment() {
                 mLocation = Coordinate(location.latitude, location.longitude)
 
                 // Get address from coordinates
-                fetchLocationAddress(location)
+                fetchLocationAddress(mLocation!!)
             }
         }
     }
@@ -231,7 +230,7 @@ class RegisterBikeFragment : Fragment() {
     private fun getLocation() {
         val locationRequest = LocationRequest()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.numUpdates = 1 // Get only one location update
+        locationRequest.numUpdates = 1 // Get only one location updateAvailability
 
         // Check whether location settings on device are satisfied
         val builder = LocationSettingsRequest.Builder()
@@ -252,10 +251,10 @@ class RegisterBikeFragment : Fragment() {
         }
     }
 
-    private fun fetchLocationAddress(location: Location) {
+    private fun fetchLocationAddress(coordinate: Coordinate) {
         val intent = Intent(context, FetchAddressIntentService::class.java).apply {
             putExtra(FetchAddressIntentService.Constants.EXTRA_RECEIVER, AddressResultReceiver())
-            putExtra(FetchAddressIntentService.Constants.EXTRA_LOCATION_DATA, location)
+            putExtra(FetchAddressIntentService.Constants.EXTRA_LOCATION_DATA, coordinate)
         }
 
         context?.startService(intent)
@@ -267,7 +266,7 @@ class RegisterBikeFragment : Fragment() {
     }
 
     private fun setBikeTypesSpinner() {
-        // Load from storage async, and update UI afterwards
+        // Load from storage async, and updateAvailability UI afterwards
         doAsync {
             val bikeTypes = sequence {
                 // Read values from .txt-file found in assets folder

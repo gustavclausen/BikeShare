@@ -30,6 +30,14 @@ class BikeViewModel : ViewModel() {
         dao.create(lockId, type, priceHour, picture, owner, lastKnownPosition, locationAddress)
     }
 
+    fun updateAvailability(lockId: String, inUse: Boolean) {
+        dao.updateAvailability(lockId, inUse)
+    }
+
+    fun updateLastKnownLocation(lockId: String, lastKnownPosition: Coordinate, lastKnownAddress: String) {
+        dao.updateLastKnownLocation(lockId, lastKnownPosition, lastKnownAddress)
+    }
+
     override fun onCleared() {
         super.onCleared()
 

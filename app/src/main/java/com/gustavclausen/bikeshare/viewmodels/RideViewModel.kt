@@ -19,17 +19,20 @@ class RideViewModel : ViewModel() {
         return dao.findById(id)
     }
 
-    // Create to start ride
+    /**
+     * Create to start ride
+     *
+     * Returns id of newly created user
+     */
     fun startRide(
-        id: String,
         bike: Bike,
         rider: User,
         startPositionLat: Double,
         startPositionLong: Double,
         startPositionAddress: String,
         startTime: Date = Date()
-    ) {
-        dao.create(id, bike, rider, startPositionLat, startPositionLong, startPositionAddress, startTime)
+    ): String {
+        return dao.create(bike, rider, startPositionLat, startPositionLong, startPositionAddress, startTime)
     }
 
     // Update to end ride

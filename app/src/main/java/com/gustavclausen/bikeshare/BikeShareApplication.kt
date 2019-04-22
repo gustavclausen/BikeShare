@@ -10,6 +10,7 @@ class BikeShareApplication : Application() {
     companion object {
         const val PREF_USER_FILE = "user"
         const val PREF_USER_ID = "user_id"
+        const val PREF_LAST_RIDE_ID = "last_ride_id"
     }
 
     override fun onCreate() {
