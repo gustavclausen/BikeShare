@@ -196,13 +196,15 @@ class RideHandlingFragment : Fragment() {
 
         val distanceMeters = startLocation.distanceTo(endLocation).toDouble()
 
+        val hourDiff = (((mEndDateTime.time.time - ride.startTime.time) / (60 * 60 * 1000)) % 24).toDouble()
+
         mRideVM.endRide(
             id = mRideId,
             endPositionLat = mEndLocation!!.lat,
             endPositionLong = mEndLocation!!.long,
             endPositionAddress = mEndLocationAddress!!,
             distanceKm = distanceMeters / 1000,
-            finalPrice = distanceMeters * 0.002f,
+            finalPrice = hourDiff * ride.bike!!.priceHour,
             endTime = mEndDateTime.time
         )
 
