@@ -220,9 +220,9 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
         mMap.setOnCameraIdleListener(mClusterManager)
         mMap.setOnMarkerClickListener(mClusterManager)
         mMap.setOnCameraMoveListener(renderer)
-
-        val top = LatLng(55.707229, 12.513691)
-        val bottom = LatLng(55.576568, 12.629495)
+        
+        val top = LatLng(55.711809, 12.468891)
+        val bottom = LatLng(55.557473, 12.682431)
 
         val builder = LatLngBounds.builder()
 
