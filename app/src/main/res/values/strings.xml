@@ -73,4 +73,15 @@
     <string name="end_location_label">End location</string>
     <string name="pick_end_location_button_label">Pick end location</string>
     <string name="title_ride_detail">Ride</string>
+    <string name="label_ride_id_section">Ride id</string>
+    <string name="label_bike_section">Bike</string>
+    <string name="button_view_bike">View bike</string>
+    <string name="label_rider_section">User</string>
+    <string name="label_start_address_section">Start address</string>
+    <string name="label_start_time_section">Start time</string>
+    <string name="label_end_time_section">End time</string>
+    <string name="label_end_address_section">End address</string>
+    <string name="label_ride_distance_section">Distance</string>
+    <string name="label_ride_price_section">Price</string>
+    <string name="distance_meter_text">%1$.2f km</string>
 </resources>

@@ -41,11 +41,11 @@ class RideViewModel : ViewModel() {
         endPositionLat: Double,
         endPositionLong: Double,
         endPositionAddress: String,
-        distance: Double,
+        distanceKm: Double,
         finalPrice: Double,
         endTime: Date = Date()
     ) {
-        dao.update(id, endPositionLat, endPositionLong, endPositionAddress, distance, finalPrice, endTime)
+        dao.update(id, endPositionLat, endPositionLong, endPositionAddress, distanceKm, finalPrice, endTime)
     }
 
     override fun onCleared() {
