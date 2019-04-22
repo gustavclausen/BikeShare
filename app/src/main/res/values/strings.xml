@@ -72,4 +72,5 @@
     <string name="end_time_label">End time</string>
     <string name="end_location_label">End location</string>
     <string name="pick_end_location_button_label">Pick end location</string>
+    <string name="title_ride_detail">Ride</string>
 </resources>
