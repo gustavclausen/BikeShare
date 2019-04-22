@@ -22,6 +22,13 @@ class RideDao(val realm: Realm) {
         return where().equalTo(Ride.Fields.IS_ENDED, true).findAllAsync()
     }
 
+    fun findAllEndedRidesForBikeAsync(bikeLockId: String): RealmResults<Ride> {
+        return where()
+               .equalTo(Ride.Fields.IS_ENDED, true)
+               .contains("${Ride.Fields.BIKE}.${Bike.Fields.LOCK_ID}", bikeLockId)
+               .findAllAsync()
+    }
+
     /**
      * Create to start ride
      *

@@ -6,6 +6,7 @@ import com.gustavclausen.bikeshare.data.entities.Bike
 import com.gustavclausen.bikeshare.data.entities.Ride
 import com.gustavclausen.bikeshare.data.entities.User
 import io.realm.Realm
+import io.realm.RealmResults
 import java.util.*
 
 class RideViewModel : ViewModel() {
@@ -17,6 +18,10 @@ class RideViewModel : ViewModel() {
 
     fun getById(id: String): Ride? {
         return dao.findById(id)
+    }
+
+    fun getAllRidesForBike(bikeLockId: String): RealmResults<Ride> {
+        return dao.findAllEndedRidesForBikeAsync(bikeLockId)
     }
 
     /**
