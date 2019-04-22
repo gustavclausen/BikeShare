@@ -26,5 +26,6 @@ open class Ride : RealmObject() {
     object Fields {
         const val ID: String = "id"
         const val IS_ENDED: String = "isEnded"
+        const val BIKE: String = "bike"
     }
 }
