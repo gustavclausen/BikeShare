@@ -56,7 +56,7 @@ class RideDao(val realm: Realm) {
         endPositionLat: Double,
         endPositionLong: Double,
         endPositionAddress: String,
-        distance: Double,
+        distanceKm: Double,
         finalPrice: Double,
         endTime: Date
     ) {
@@ -66,7 +66,7 @@ class RideDao(val realm: Realm) {
             ride.endPositionLat = endPositionLat
             ride.endPositionLong = endPositionLong
             ride.endPositionAddress = endPositionAddress
-            ride.distance = distance
+            ride.distanceKm = distanceKm
             ride.finalPrice = finalPrice
             ride.endTime = endTime
         }

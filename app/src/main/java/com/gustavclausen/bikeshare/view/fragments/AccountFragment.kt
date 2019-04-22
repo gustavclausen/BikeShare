@@ -58,7 +58,7 @@ class AccountFragment : Fragment() {
         val user = mUserVM.getById(mUserId) ?: return
 
         user_full_name_text.text = user.fullName
-        user_account_balance_text.text = getString(R.string.account_balance_text, user.accountBalance)
+        user_account_balance_text.text = getString(R.string.money_amount_text, user.accountBalance)
 
         val balanceColor = if (user.accountBalance >= 0.0) R.color.colorPositiveBalance
         else R.color.colorNegativeBalance

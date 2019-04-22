@@ -182,19 +182,17 @@ class RideHandlingFragment : Fragment() {
         endLocation.latitude = mEndLocation!!.lat
         endLocation.longitude = mEndLocation!!.long
 
-        val distance = startLocation.distanceTo(endLocation).toDouble()
+        val distanceMeters = startLocation.distanceTo(endLocation).toDouble()
 
         mRideVM.endRide(
             id = mRideId,
             endPositionLat = mEndLocation!!.lat,
             endPositionLong = mEndLocation!!.long,
             endPositionAddress = mEndLocationAddress!!,
-            distance = distance,
-            finalPrice = distance * 0.002f,
+            distanceKm = distanceMeters / 1000,
+            finalPrice = distanceMeters * 0.002f,
             endTime = mEndDateTime.time
         )
-
-        Toast.makeText(context!!, distance.toString(), Toast.LENGTH_SHORT).show()
 
         val bikeLockId = ride.bike!!.lockId
 

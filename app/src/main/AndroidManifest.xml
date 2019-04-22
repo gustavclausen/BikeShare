@@ -38,6 +38,7 @@
             android:name=".view.activities.RegisterBikeActivity"
             android:parentActivityName=".view.activities.BikeShareActivity" />
         <activity android:name=".view.activities.BikeDetailActivity" />
+        <activity android:name=".view.activities.RideDetailActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

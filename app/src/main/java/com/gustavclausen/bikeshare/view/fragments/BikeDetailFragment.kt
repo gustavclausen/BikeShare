@@ -56,7 +56,7 @@ class BikeDetailFragment : Fragment() {
         bike_type.text = bike.type
         bike_price.text = bike.priceHour.toString()
         bike_availability.text = if (bike.inUse) getString(R.string.in_use) else getString(R.string.not_in_use)
-        bike_address.text = bike.lastLocationAddress
+        ride_end_address.text = bike.lastLocationAddress
         bike_owner_name.text = bike.owner?.fullName
         bike_lock_id.text = bike.lockId
     }

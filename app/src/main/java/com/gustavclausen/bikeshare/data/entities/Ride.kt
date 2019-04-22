@@ -20,7 +20,7 @@ open class Ride : RealmObject() {
     var endPositionAddress: String = ""
     var endTime: Date = Date()
     var isEnded: Boolean = false
-    var distance: Double = 0.0
+    var distanceKm: Double = 0.0
     var finalPrice: Double = 0.0
 
     object Fields {

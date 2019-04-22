@@ -42,7 +42,7 @@
     <string name="no_lock_id_error_message">No lock registered.</string>
     <string name="no_price_specified_error_message">No price specified.</string>
     <string name="add_balance_button_text">Add to balance</string>
-    <string name="account_balance_text">$ %1$.2f</string>
+    <string name="money_amount_text">$ %1$.2f</string>
     <string name="rides_section_label">Rides</string>
     <string name="bikes_section_label">Bikes</string>
     <string name="add_bike_button_text">Add bike</string>
@@ -72,4 +72,16 @@
     <string name="end_time_label">End time</string>
     <string name="end_location_label">End location</string>
     <string name="pick_end_location_button_label">Pick end location</string>
+    <string name="title_ride_detail">Ride</string>
+    <string name="label_ride_id_section">Ride id</string>
+    <string name="label_bike_section">Bike</string>
+    <string name="button_view_bike">View bike</string>
+    <string name="label_rider_section">User</string>
+    <string name="label_start_address_section">Start address</string>
+    <string name="label_start_time_section">Start time</string>
+    <string name="label_end_time_section">End time</string>
+    <string name="label_end_address_section">End address</string>
+    <string name="label_ride_distance_section">Distance</string>
+    <string name="label_ride_price_section">Price</string>
+    <string name="distance_meter_text">%1$.2f km</string>
 </resources>
