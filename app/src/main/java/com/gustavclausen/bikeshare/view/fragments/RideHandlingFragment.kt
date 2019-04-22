@@ -9,7 +9,9 @@ import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.view.*
+import android.widget.TextView
 import android.widget.Toast
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.data.entities.Coordinate
@@ -19,14 +21,20 @@ import com.gustavclausen.bikeshare.view.activities.LocationPickerActivity
 import com.gustavclausen.bikeshare.view.utils.DateFormatter
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
+import com.gustavclausen.bikeshare.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_ride_handling.*
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.time.Duration
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class RideHandlingFragment : Fragment() {
 
     private lateinit var mRideId: String
     private lateinit var mRideVM: RideViewModel
     private lateinit var mBikeVM: BikeViewModel
+    private lateinit var mUserVM: UserViewModel
 
     private var mEndDateTime = Calendar.getInstance()
     private var mEndLocation: Coordinate? = null
@@ -71,6 +79,7 @@ class RideHandlingFragment : Fragment() {
 
         mRideVM = ViewModelProviders.of(this).get(RideViewModel::class.java)
         mBikeVM = ViewModelProviders.of(this).get(BikeViewModel::class.java)
+        mUserVM = ViewModelProviders.of(this).get(UserViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -194,27 +203,59 @@ class RideHandlingFragment : Fragment() {
         endLocation.latitude = mEndLocation!!.lat
         endLocation.longitude = mEndLocation!!.long
 
-        val distanceMeters = startLocation.distanceTo(endLocation).toDouble()
+        val distanceKm = startLocation.distanceTo(endLocation).toDouble() / 1000
 
-        mRideVM.endRide(
-            id = mRideId,
-            endPositionLat = mEndLocation!!.lat,
-            endPositionLong = mEndLocation!!.long,
-            endPositionAddress = mEndLocationAddress!!,
-            distanceKm = distanceMeters / 1000,
-            finalPrice = distanceMeters * 0.002f,
-            endTime = mEndDateTime.time
-        )
+        val hourDiff = hourDiff(ride.startTime, mEndDateTime.time)
+        val finalPrice = hourDiff * ride.bike!!.priceHour.toDouble()
 
-        val bikeLockId = ride.bike!!.lockId
+        // Make payment dialog
+        val paymentDialog = AlertDialog.Builder(context!!).setTitle(R.string.payment_dialog_title)
 
-        // Update status of bike
-        mBikeVM.updateAvailability(bikeLockId, inUse = false)
-        mBikeVM.updateLastKnownLocation(bikeLockId, mEndLocation!!, mEndLocationAddress!!)
+        val dialogContentView = layoutInflater.inflate(R.layout.dialog_payment, null)
 
-        val bikeShareActivity = (activity as BikeShareActivity)
-        bikeShareActivity.updateLastRide(null)
-        bikeShareActivity.loadRideFragment()
+        val rideDuration = dialogContentView.findViewById<TextView>(R.id.ride_duration)
+        rideDuration.text = getString(R.string.duration_placeholder_text, getString(R.string.duration_hours_text, hourDiff))
+
+        val rideDistance = dialogContentView.findViewById<TextView>(R.id.ride_distance)
+        rideDistance.text = getString(R.string.distance_placeholder_text, getString(R.string.distance_km_text, distanceKm))
+
+        val paymentAmount = dialogContentView.findViewById<TextView>(R.id.ride_payment_amount)
+        paymentAmount.text = getString(R.string.payment_amount_placeholder_text, getString(R.string.money_amount_text, finalPrice))
+
+        paymentDialog.setView(dialogContentView)
+        paymentDialog.setPositiveButton(R.string.button_dialog_pay) { _, _ ->
+            // Update states
+            mRideVM.endRide(
+                id = mRideId,
+                endPositionLat = mEndLocation!!.lat,
+                endPositionLong = mEndLocation!!.long,
+                endPositionAddress = mEndLocationAddress!!,
+                distanceKm = distanceKm,
+                finalPrice = finalPrice,
+                endTime = mEndDateTime.time
+            )
+
+            val bikeLockId = ride.bike!!.lockId
+
+            // Update status of bike
+            mBikeVM.updateAvailability(bikeLockId, inUse = false)
+            mBikeVM.updateLastKnownLocation(bikeLockId, mEndLocation!!, mEndLocationAddress!!)
+
+            // Update user balance
+            mUserVM.substractFromBalance(ride.rider!!.id, finalPrice)
+
+            val bikeShareActivity = (activity as BikeShareActivity)
+            bikeShareActivity.updateLastRide(null)
+            bikeShareActivity.loadRideFragment()
+        }
+
+        paymentDialog.create()
+        paymentDialog.show()
+    }
+
+    private fun hourDiff(from: Date, to: Date) : Double {
+        val secondsDiff = TimeUnit.MILLISECONDS.toSeconds(to.time - from.time)
+        return secondsDiff.toDouble() / 60.0 / 60.0
     }
 
     internal inner class AddressResultReceiver : ResultReceiver(Handler(Looper.getMainLooper())) {
