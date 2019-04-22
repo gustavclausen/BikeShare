@@ -27,9 +27,7 @@ class BikesRecyclerAdapter(private val context: Context) :
         }
     }
 
-    fun setBikesList(bikeList: RealmResults<Bike>) {
-        updateData(bikeList)
-    }
+    fun setBikesList(bikeList: RealmResults<Bike>) = updateData(bikeList)
 
     inner class BikeHolder(inflater: LayoutInflater, parent: ViewGroup) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_bike, parent, false)) {

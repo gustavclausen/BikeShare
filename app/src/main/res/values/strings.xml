@@ -84,4 +84,5 @@
     <string name="label_ride_distance_section">Distance</string>
     <string name="label_ride_price_section">Price</string>
     <string name="distance_km_text">%1$.2f km</string>
+    <string name="button_close">Close</string>
 </resources>
