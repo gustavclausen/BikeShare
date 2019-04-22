@@ -311,6 +311,8 @@ class RegisterBikeFragment : Fragment() {
     }
 
     private fun submitForm() {
+        val price = Integer.parseInt(price_input.text.toString())
+
         when {
             mLockId == null -> {
                 makeToastWithStringRes(R.string.no_lock_id_error_message)
@@ -319,6 +321,9 @@ class RegisterBikeFragment : Fragment() {
             price_input.text.isNullOrBlank() -> {
                 makeToastWithStringRes(R.string.no_price_specified_error_message)
                 return
+            }
+            price < 0 || price > 99 -> {
+                makeToastWithStringRes(R.string.price_out_of_range_message)
             }
             mLocation == null -> {
                 makeToastWithStringRes(R.string.location_not_read_message)

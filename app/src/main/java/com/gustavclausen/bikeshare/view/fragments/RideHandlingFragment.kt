@@ -21,6 +21,7 @@ import com.gustavclausen.bikeshare.view.activities.LocationPickerActivity
 import com.gustavclausen.bikeshare.view.utils.DateFormatter
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
+import com.gustavclausen.bikeshare.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_ride_handling.*
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -33,6 +34,7 @@ class RideHandlingFragment : Fragment() {
     private lateinit var mRideId: String
     private lateinit var mRideVM: RideViewModel
     private lateinit var mBikeVM: BikeViewModel
+    private lateinit var mUserVM: UserViewModel
 
     private var mEndDateTime = Calendar.getInstance()
     private var mEndLocation: Coordinate? = null
@@ -77,6 +79,7 @@ class RideHandlingFragment : Fragment() {
 
         mRideVM = ViewModelProviders.of(this).get(RideViewModel::class.java)
         mBikeVM = ViewModelProviders.of(this).get(BikeViewModel::class.java)
+        mUserVM = ViewModelProviders.of(this).get(UserViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -237,6 +240,9 @@ class RideHandlingFragment : Fragment() {
             // Update status of bike
             mBikeVM.updateAvailability(bikeLockId, inUse = false)
             mBikeVM.updateLastKnownLocation(bikeLockId, mEndLocation!!, mEndLocationAddress!!)
+
+            // Update user balance
+            mUserVM.substractFromBalance(ride.rider!!.id, finalPrice)
 
             val bikeShareActivity = (activity as BikeShareActivity)
             bikeShareActivity.updateLastRide(null)
