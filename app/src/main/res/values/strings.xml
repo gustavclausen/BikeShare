@@ -87,4 +87,10 @@
     <string name="button_close">Close</string>
     <string name="date_time_input_error">End time must be after start time</string>
     <string name="missing_end_location_error">Please select an end location</string>
+    <string name="payment_dialog_title">Your ride</string>
+    <string name="duration_hours_text">%1$.1f hour(s)</string>
+    <string name="duration_placeholder_text">Duration: %1s</string>
+    <string name="distance_placeholder_text">Distance: %1s</string>
+    <string name="payment_amount_placeholder_text">To pay: %1s</string>
+    <string name="button_dialog_pay">Pay</string>
 </resources>
