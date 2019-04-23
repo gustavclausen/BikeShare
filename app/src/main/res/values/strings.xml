@@ -104,4 +104,6 @@
     <string name="button_dialog_pay">Pay</string>
     <string name="price_out_of_range_message">Price must be between 0 and 99</string>
     <string name="label_price_detail_bike">Price per hour</string>
+    <string name="marker_start_position_title">Start position</string>
+    <string name="marker_end_position_title">End position</string>
 </resources>

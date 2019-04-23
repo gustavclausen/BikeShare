@@ -11,10 +11,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.data.entities.Coordinate
+import com.gustavclausen.bikeshare.view.utils.MapConstants
 
 class EndPositionPickerActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -75,6 +75,16 @@ class EndPositionPickerActivity : AppCompatActivity(), OnMapReadyCallback, Googl
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.setOnMapClickListener(this)
+        mMap.setMinZoomPreference(MapConstants.minZoomPreference)
+        mMap.setMaxZoomPreference(MapConstants.maxZoomPreference)
+
+        // Set bounds on map
+        val builder = LatLngBounds.builder()
+        builder.include(MapConstants.mapBoundsTop)
+        builder.include(MapConstants.mapBoundsBottom)
+
+        val bounds = builder.build()
+        mMap.setLatLngBoundsForCameraTarget(bounds)
 
         mapPositionMarkers()
 
@@ -98,13 +108,21 @@ class EndPositionPickerActivity : AppCompatActivity(), OnMapReadyCallback, Googl
         mMap.clear()
 
         // Mark start location
-        mMap.addMarker(MarkerOptions().position(LatLng(mStartPosition.latitude, mStartPosition.longitude)))
+        mMap.addMarker(
+            MarkerOptions()
+                .position(LatLng(mStartPosition.latitude, mStartPosition.longitude))
+                .title(getString(R.string.marker_start_position_title))
+                .icon(MapConstants.startPositionMarkerColor)
+        ).showInfoWindow()
 
         // Mark end location if set
         if (mEndPositionMarker != null) {
             mMap.addMarker(
-                MarkerOptions().position(LatLng(mEndPositionMarker!!.latitude, mEndPositionMarker!!.longitude))
-            )
+                MarkerOptions()
+                    .position(LatLng(mEndPositionMarker!!.latitude, mEndPositionMarker!!.longitude))
+                    .title(getString(R.string.marker_end_position_title))
+                    .icon(MapConstants.endPositionMarkerColor)
+            ).showInfoWindow()
         }
     }
 
