@@ -13,11 +13,11 @@ class PermissionRationaleDialog : DialogFragment() {
     private lateinit var mFinishActivityToastText: String // Text to display in toast if Activity quits
 
     companion object {
-        private const val ARGUMENT_PERMISSION_REQUEST_NAME = "permissionRequestName"
-        private const val ARGUMENT_PERMISSION_REQUEST_CODE = "requestCode"
-        private const val ARGUMENT_RATIONALE_TEXT = "rationaleText"
-        private const val ARGUMENT_FINISH_ACTIVITY = "finish"
-        private const val ARGUMENT_FINISH_ACTIVITY_TOAST_TEXT = "finishActivityToastText"
+        private const val ARG_PERMISSION_REQUEST_NAME = "permissionRequestName"
+        private const val ARG_PERMISSION_REQUEST_CODE = "requestCode"
+        private const val ARG_RATIONALE_TEXT = "rationaleText"
+        private const val ARG_FINISH_ACTIVITY = "finish"
+        private const val ARG_FINISH_ACTIVITY_TOAST_TEXT = "finishActivityToastText"
 
         fun newInstance(
             requestPermission: String,
@@ -26,26 +26,26 @@ class PermissionRationaleDialog : DialogFragment() {
             finishActivity: Boolean = false,
             finishActivityToastText: String = ""
         ): PermissionRationaleDialog {
-            val arguments = Bundle()
-            arguments.putString(ARGUMENT_PERMISSION_REQUEST_NAME, requestPermission)
-            arguments.putInt(ARGUMENT_PERMISSION_REQUEST_CODE, requestCode)
-            arguments.putString(ARGUMENT_RATIONALE_TEXT, rationaleText)
-            arguments.putBoolean(ARGUMENT_FINISH_ACTIVITY, finishActivity)
-            arguments.putString(ARGUMENT_FINISH_ACTIVITY_TOAST_TEXT, finishActivityToastText)
+            val args = Bundle()
+            args.putString(ARG_PERMISSION_REQUEST_NAME, requestPermission)
+            args.putInt(ARG_PERMISSION_REQUEST_CODE, requestCode)
+            args.putString(ARG_RATIONALE_TEXT, rationaleText)
+            args.putBoolean(ARG_FINISH_ACTIVITY, finishActivity)
+            args.putString(ARG_FINISH_ACTIVITY_TOAST_TEXT, finishActivityToastText)
 
             val dialog = PermissionRationaleDialog()
-            dialog.arguments = arguments
+            dialog.arguments = args
 
             return dialog
         }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val requestPermission = arguments!!.getString(ARGUMENT_PERMISSION_REQUEST_NAME)
-        val requestCode = arguments!!.getInt(ARGUMENT_PERMISSION_REQUEST_CODE)
-        val rationaleText = arguments!!.getString(ARGUMENT_RATIONALE_TEXT)
-        mFinishActivity = arguments!!.getBoolean(ARGUMENT_FINISH_ACTIVITY)
-        mFinishActivityToastText = arguments!!.getString(ARGUMENT_FINISH_ACTIVITY_TOAST_TEXT)
+        val requestPermission = arguments!!.getString(ARG_PERMISSION_REQUEST_NAME)
+        val requestCode = arguments!!.getInt(ARG_PERMISSION_REQUEST_CODE)
+        val rationaleText = arguments!!.getString(ARG_RATIONALE_TEXT)
+        mFinishActivity = arguments!!.getBoolean(ARG_FINISH_ACTIVITY)
+        mFinishActivityToastText = arguments!!.getString(ARG_FINISH_ACTIVITY_TOAST_TEXT)
 
         return AlertDialog.Builder(activity!!)
                           .setMessage(rationaleText)
