@@ -10,9 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.view.adapters.BikesRecyclerAdapter
-import com.gustavclausen.bikeshare.data.entities.Bike
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
-import io.realm.RealmResults
 
 class BikesOverviewFragment : Fragment() {
 
@@ -25,7 +23,7 @@ class BikesOverviewFragment : Fragment() {
         mBikeVM = ViewModelProviders.of(this).get(BikeViewModel::class.java)
 
         mBikeAdapter = BikesRecyclerAdapter(context!!)
-        mBikeAdapter.setBikesList(mBikeVM.allBikes)
+        mBikeAdapter.setList(mBikeVM.allBikes)
 
         val bikesList = view.findViewById(R.id.bike_list) as RecyclerView
         bikesList.layoutManager = LinearLayoutManager(activity)

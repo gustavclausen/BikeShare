@@ -21,26 +21,26 @@ class RidesRecyclerAdapter(private val context: Context) :
         val ride = getItem(position)!!
 
         holder.bind(ride)
-        // Open detail view on click
+        // Open detail view of ride on click
         holder.itemView.setOnClickListener {
             context.startActivity(RideDetailActivity.newIntent(context, ride.id))
         }
     }
 
-    fun setRidesList(ridesList: RealmResults<Ride>) = updateData(ridesList)
+    fun setList(rideList: RealmResults<Ride>) = updateData(rideList)
 
     inner class RideHolder(inflater: LayoutInflater, parent: ViewGroup) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_ride, parent, false)) {
 
         internal fun bind(ride: Ride) {
-            val startAddress = itemView.findViewById(R.id.ride_start_address) as TextView
-            startAddress.text = ride.startPositionAddress
+            val startAddressField = itemView.findViewById<TextView>(R.id.ride_start_address)
+            startAddressField.text = ride.startPositionAddress
 
-            val endAddress = itemView.findViewById(R.id.ride_end_address) as TextView
-            endAddress.text = ride.endPositionAddress
+            val endAddressField = itemView.findViewById<TextView>(R.id.ride_end_address)
+            endAddressField.text = ride.endPositionAddress
 
-            val distance = itemView.findViewById(R.id.ride_distance) as TextView
-            distance.text = context.getString(R.string.distance_km_text, ride.distanceKm)
+            val distanceField = itemView.findViewById<TextView>(R.id.ride_distance)
+            distanceField.text = context.getString(R.string.distance_km_text, ride.distanceKm)
         }
     }
 }

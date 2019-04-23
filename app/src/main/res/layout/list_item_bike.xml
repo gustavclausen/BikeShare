@@ -15,12 +15,12 @@
         android:maxLines="1"
         android:textAlignment="textStart"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/bike_last_known_address"
+        app:layout_constraintEnd_toStartOf="@+id/bike_position_address"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/bike_last_known_address"
+        android:id="@+id/bike_position_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -47,7 +47,7 @@
         android:textAlignment="textEnd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/bike_last_known_address"
+        app:layout_constraintStart_toEndOf="@id/bike_position_address"
         app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

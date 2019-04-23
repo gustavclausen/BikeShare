@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.gustavclausen.bikeshare.R
-import com.gustavclausen.bikeshare.view.adapters.PaymentRecyclerAdapter
+import com.gustavclausen.bikeshare.view.adapters.RidePaymentRecyclerAdapter
 import com.gustavclausen.bikeshare.view.adapters.RidesRecyclerAdapter
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
@@ -79,7 +79,7 @@ class BikeDetailFragment : Fragment() {
             val rideList = layoutInflater.inflate(R.layout.fragment_rides_overview, null)
 
             val rideAdapter = RidesRecyclerAdapter(context!!)
-            rideAdapter.setRidesList(mRideVM.getAllRidesForBike(mBikeLockId))
+            rideAdapter.setList(mRideVM.getAllRidesForBike(mBikeLockId))
 
             val ridesList = rideList.findViewById(R.id.ride_list) as RecyclerView
             ridesList.layoutManager = LinearLayoutManager(activity)
@@ -99,8 +99,8 @@ class BikeDetailFragment : Fragment() {
 
             val rides = mRideVM.getAllRidesForBike(mBikeLockId)
 
-            val paymentAdapter = PaymentRecyclerAdapter(context!!)
-            paymentAdapter.setPaymentList(rides)
+            val paymentAdapter = RidePaymentRecyclerAdapter(context!!)
+            paymentAdapter.setList(rides)
 
             rides.addChangeListener { rides ->
                 val total = paymentList.findViewById(R.id.payment_total_amount) as TextView

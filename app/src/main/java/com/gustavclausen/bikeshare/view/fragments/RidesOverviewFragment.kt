@@ -24,7 +24,7 @@ class RidesOverviewFragment : Fragment() {
         mRideVM = ViewModelProviders.of(this).get(RideViewModel::class.java)
 
         mRideAdapter = RidesRecyclerAdapter(context!!)
-        mRideAdapter.setRidesList(mRideVM.endedRides)
+        mRideAdapter.setList(mRideVM.endedRides)
 
         val ridesList = view.findViewById(R.id.ride_list) as RecyclerView
         ridesList.layoutManager = LinearLayoutManager(activity)
