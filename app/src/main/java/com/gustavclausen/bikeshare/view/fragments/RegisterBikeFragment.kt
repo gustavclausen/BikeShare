@@ -27,7 +27,9 @@ import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.data.entities.Coordinate
 import com.gustavclausen.bikeshare.services.FetchAddressIntentService
+import com.gustavclausen.bikeshare.utils.InternetConnectionUtils
 import com.gustavclausen.bikeshare.utils.PermissionUtils
+import com.gustavclausen.bikeshare.view.activities.BikeShareActivity
 import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.UserViewModel
@@ -47,27 +49,26 @@ class RegisterBikeFragment : Fragment() {
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private lateinit var mLocationCallback: LocationCallback
+    private var mLocationPermissionDenied: Boolean = false
 
     private var mCurrentBikePhotoPath: String? = null
     private var mBikePhoto: ByteArray? = null
     private var mLockId: UUID? = null
     private var mSelectedBikeType: Int = 0
-    private var mLocation: Coordinate? = null
-    private var mLocationAddress: String? = null
-
-    private var mLocationPermissionDenied: Boolean = false
+    private var mCurrentPosition: Coordinate? = null
+    private var mCurrentPositionAddress: String? = null
 
     companion object {
         private const val TAG = "RegisterBikeFragment"
         private const val REQUEST_IMAGE_CAPTURE = 1
         private const val REQUEST_LOCATION_PERMISSION_CODE = 2
 
-        private const val SAVED_THUMBNAIL_BIKE_PHOTO_PATH = "thumbnailBikePhotoPath"
-        private const val SAVED_PICTURE = "bikePicture"
-        private const val SAVED_LOCK_ID = "lockId"
-        private const val SAVED_SELECTED_BIKE_TYPE = "selectedBikeType"
-        private const val SAVED_LOCATION = "location"
-        private const val SAVED_LOCATION_ADDRESS = "locationAddress"
+        private const val SAVED_BIKE_PHOTO_PATH = "savedBikePhotoPath"
+        private const val SAVED_PICTURE = "savedBikePicture"
+        private const val SAVED_LOCK_ID = "savedLockId"
+        private const val SAVED_SELECTED_BIKE_TYPE = "savedSelectedBikeType"
+        private const val SAVED_CURRENT_POSITION = "savedCurrentPosition"
+        private const val SAVED_CURRENT_POSITION_ADDRESS = "savedCurrentPositionAddress"
 
         private const val BIKE_TYPES_ASSETS_PATH = "bike_types.txt"
     }
@@ -77,11 +78,11 @@ class RegisterBikeFragment : Fragment() {
         setHasOptionsMenu(true)
 
         if (savedInstanceState != null) {
-            mCurrentBikePhotoPath = savedInstanceState.getString(SAVED_THUMBNAIL_BIKE_PHOTO_PATH)
+            mCurrentBikePhotoPath = savedInstanceState.getString(SAVED_BIKE_PHOTO_PATH)
             mLockId = savedInstanceState.getSerializable(SAVED_LOCK_ID) as UUID?
             mSelectedBikeType = savedInstanceState.getInt(SAVED_SELECTED_BIKE_TYPE)
-            mLocation = savedInstanceState.getSerializable(SAVED_LOCATION) as Coordinate?
-            mLocationAddress = savedInstanceState.getString(SAVED_LOCATION_ADDRESS)
+            mCurrentPosition = savedInstanceState.getSerializable(SAVED_CURRENT_POSITION) as Coordinate?
+            mCurrentPositionAddress = savedInstanceState.getString(SAVED_CURRENT_POSITION_ADDRESS)
             mBikePhoto = savedInstanceState.getByteArray(SAVED_PICTURE)
         }
 
@@ -102,10 +103,10 @@ class RegisterBikeFragment : Fragment() {
                 }
 
                 val location = locationResult!!.lastLocation
-                mLocation = Coordinate(location.latitude, location.longitude)
+                mCurrentPosition = Coordinate(location.latitude, location.longitude)
 
                 // Get address from coordinates
-                fetchLocationAddress(mLocation!!)
+                fetchPositionAddress(mCurrentPosition!!)
             }
         }
     }
@@ -147,11 +148,11 @@ class RegisterBikeFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putString(SAVED_THUMBNAIL_BIKE_PHOTO_PATH, mCurrentBikePhotoPath)
+        outState.putString(SAVED_BIKE_PHOTO_PATH, mCurrentBikePhotoPath)
         outState.putSerializable(SAVED_LOCK_ID, mLockId)
         outState.putInt(SAVED_SELECTED_BIKE_TYPE, bike_type_spinner.selectedItemPosition)
-        outState.putSerializable(SAVED_LOCATION, mLocation)
-        outState.putString(SAVED_LOCATION_ADDRESS, mLocationAddress)
+        outState.putSerializable(SAVED_CURRENT_POSITION, mCurrentPosition)
+        outState.putString(SAVED_CURRENT_POSITION_ADDRESS, mCurrentPositionAddress)
         outState.putByteArray(SAVED_PICTURE, mBikePhoto)
     }
 
@@ -166,7 +167,17 @@ class RegisterBikeFragment : Fragment() {
                 finishActivityToastText = getString(R.string.permission_required_toast)
             ).show(childFragmentManager, "dialog")
         } else {
-            getLocation()
+            requestLocation()
+        }
+
+        // Check if device has available internet connection
+        if (!InternetConnectionUtils.isConnected(context!!)) {
+            // Device is not connected to the Internet, display error dialog
+            InfoDialog.newInstance(
+                dialogText = getString(R.string.internet_connection_required_message),
+                finishActivity = true,
+                finishActivityToastText = getString(R.string.internet_connection_required_toast)
+            ).show(childFragmentManager, "dialog")
         }
     }
 
@@ -180,7 +191,7 @@ class RegisterBikeFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.register_bike_button -> {
-                submitForm()
+                submit()
                 true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -190,7 +201,7 @@ class RegisterBikeFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             doAsync {
-                mBikePhoto = getCompressedBikePhoto()
+                mBikePhoto = createCompressedBikePhoto()
 
                 uiThread {
                     setBikeThumbnail()
@@ -227,10 +238,10 @@ class RegisterBikeFragment : Fragment() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLocation() {
+    private fun requestLocation() {
         val locationRequest = LocationRequest()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.numUpdates = 1 // Get only one location updateAvailability
+        locationRequest.numUpdates = 1 // Get only one location update
 
         // Check whether location settings on device are satisfied
         val builder = LocationSettingsRequest.Builder()
@@ -251,7 +262,7 @@ class RegisterBikeFragment : Fragment() {
         }
     }
 
-    private fun fetchLocationAddress(coordinate: Coordinate) {
+    private fun fetchPositionAddress(coordinate: Coordinate) {
         val intent = Intent(context, FetchAddressIntentService::class.java).apply {
             putExtra(FetchAddressIntentService.Constants.EXTRA_RECEIVER, AddressResultReceiver())
             putExtra(FetchAddressIntentService.Constants.EXTRA_LOCATION_DATA, coordinate)
@@ -266,7 +277,7 @@ class RegisterBikeFragment : Fragment() {
     }
 
     private fun setBikeTypesSpinner() {
-        // Load from storage async, and updateAvailability UI afterwards
+        // Load from storage async, and update UI afterwards
         doAsync {
             val bikeTypes = sequence {
                 // Read values from .txt-file found in assets folder
@@ -291,10 +302,10 @@ class RegisterBikeFragment : Fragment() {
 
     private fun setBikeThumbnail() {
         Glide.with(this)
-             .load(mBikePhoto)
-             .centerCrop()
-             .placeholder(R.drawable.ic_camera)
-             .into(bike_photo_button)
+            .load(mBikePhoto)
+            .centerCrop()
+            .placeholder(R.drawable.ic_camera)
+            .into(bike_photo_button)
     }
 
     private fun setLockId() {
@@ -310,7 +321,7 @@ class RegisterBikeFragment : Fragment() {
         Toast.makeText(context!!, getString(stringResourceId), Toast.LENGTH_SHORT).show()
     }
 
-    private fun submitForm() {
+    private fun submit() {
         val price = Integer.parseInt(price_input.text.toString())
 
         when {
@@ -324,34 +335,28 @@ class RegisterBikeFragment : Fragment() {
             }
             price < 0 || price > 99 -> {
                 makeToastWithStringRes(R.string.price_out_of_range_message)
+                return
             }
-            mLocation == null -> {
+            mCurrentPosition == null -> {
                 makeToastWithStringRes(R.string.location_not_read_message)
                 return
             }
         }
 
-        doAsync {
-            val userPreferences =
-                context!!.getSharedPreferences(BikeShareApplication.PREF_USER_FILE, Context.MODE_PRIVATE)
-            val registeredUserId = userPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
+        val bikeShareActivity = (activity as BikeShareActivity)
+        val user = mUserVM.getById(bikeShareActivity.getUserId()!!)!!
 
-            uiThread {
-                val user = mUserVM.getById(registeredUserId) ?: return@uiThread
+        mBikeVM.create(
+            lockId = mLockId.toString(),
+            type = bike_type_spinner.selectedItem.toString(),
+            priceHour = price_input.text.toString().toInt(),
+            picture = mBikePhoto,
+            owner = user,
+            position = mCurrentPosition!!,
+            positionAddress = mCurrentPositionAddress ?: "N/A"
+        )
 
-                mBikeVM.create(
-                    lockId = mLockId.toString(),
-                    type = bike_type_spinner.selectedItem.toString(),
-                    priceHour = price_input.text.toString().toInt(),
-                    picture = mBikePhoto,
-                    owner = user,
-                    position = mLocation!!,
-                    positionAddress = mLocationAddress!!
-                )
-
-                activity?.finish() // Close activity after submission
-            }
-        }
+        activity?.finish() // Close activity after submission
     }
 
     private fun dispatchTakePictureIntent() {
@@ -385,7 +390,7 @@ class RegisterBikeFragment : Fragment() {
         }
     }
 
-    private fun getCompressedBikePhoto(): ByteArray? {
+    private fun createCompressedBikePhoto(): ByteArray? {
         if (mCurrentBikePhotoPath == null) return null
 
         /*
@@ -440,7 +445,7 @@ class RegisterBikeFragment : Fragment() {
             if (resultCode == FetchAddressIntentService.Constants.EXTRA_FAILURE_RESULT) {
                 Toast.makeText(context!!, resultMessage, Toast.LENGTH_SHORT).show()
             } else if (resultCode == FetchAddressIntentService.Constants.EXTRA_SUCCESS_RESULT) {
-                mLocationAddress = resultMessage
+                mCurrentPositionAddress = resultMessage
             }
         }
     }

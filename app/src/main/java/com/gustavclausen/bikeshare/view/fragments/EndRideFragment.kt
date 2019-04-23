@@ -171,7 +171,7 @@ class EndRideFragment : Fragment() {
                 mEndDateTime = data!!.getSerializableExtra(DatePickerFragment.EXTRA_CALENDAR) as Calendar
             }
             TIME_REQUEST_CODE -> {
-                mEndDateTime = data!!.getSerializableExtra(TimePickerFragment.EXTRA_TIME) as Calendar
+                mEndDateTime = data!!.getSerializableExtra(TimePickerFragment.EXTRA_CALENDAR) as Calendar
             }
             END_POSITION_REQUEST_CODE -> {
                 mEndPosition = data!!.getSerializableExtra(EndPositionPickerActivity.EXTRA_END_POSITION) as Coordinate

@@ -12,12 +12,12 @@ import java.util.*
 class TimePickerFragment : DialogFragment() {
 
     companion object {
-        private const val ARG_TIME = "time"
-        const val EXTRA_TIME = "com.gustavclausen.bikeshare.time"
+        private const val ARG_CALENDAR = "calendar"
+        const val EXTRA_CALENDAR = "com.gustavclausen.bikeshare.time_picker_calendar"
 
         fun newInstance(calendar: Calendar): TimePickerFragment {
             val args = Bundle()
-            args.putSerializable(ARG_TIME, calendar)
+            args.putSerializable(ARG_CALENDAR, calendar)
 
             val fragment = TimePickerFragment()
             fragment.arguments = args
@@ -27,7 +27,7 @@ class TimePickerFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val calendar = arguments!!.getSerializable(TimePickerFragment.ARG_TIME) as Calendar
+        val calendar = arguments!!.getSerializable(TimePickerFragment.ARG_CALENDAR) as Calendar
 
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         val minute = calendar.get(Calendar.MINUTE)
@@ -44,7 +44,7 @@ class TimePickerFragment : DialogFragment() {
         if (targetFragment == null) return
 
         val intent = Intent()
-        intent.putExtra(TimePickerFragment.EXTRA_TIME, calendar)
+        intent.putExtra(TimePickerFragment.EXTRA_CALENDAR, calendar)
 
         targetFragment!!.onActivityResult(targetRequestCode, resultCode, intent)
     }
