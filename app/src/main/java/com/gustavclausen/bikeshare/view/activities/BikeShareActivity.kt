@@ -7,8 +7,10 @@ import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
+import com.gustavclausen.bikeshare.utils.InternetConnectionUtils
 import com.gustavclausen.bikeshare.view.fragments.AccountFragment
 import com.gustavclausen.bikeshare.view.fragments.OverviewFragment
 import com.gustavclausen.bikeshare.view.fragments.BikeMapFragment
@@ -19,7 +21,7 @@ import org.jetbrains.anko.doAsync
 
 class BikeShareActivity : AppCompatActivity() {
 
-    lateinit var mUserPreferences: SharedPreferences
+    private lateinit var mUserPreferences: SharedPreferences
 
     // Listener for menu items in bottom navigation bar
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -80,6 +82,10 @@ class BikeShareActivity : AppCompatActivity() {
                 editor.apply()
             }
         }
+    }
+
+    fun getUserId(): String? {
+        return mUserPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
     }
 
     fun updateLastRide(rideId: String?) {

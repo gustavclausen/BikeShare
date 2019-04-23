@@ -28,12 +28,13 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
-import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
+import com.gustavclausen.bikeshare.utils.InternetConnectionUtils
 import com.gustavclausen.bikeshare.utils.PermissionUtils
 import com.gustavclausen.bikeshare.view.activities.BikeDetailActivity
 import com.gustavclausen.bikeshare.view.activities.BikeShareActivity
 import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
+import com.gustavclausen.bikeshare.view.utils.MapConstants
 import com.gustavclausen.bikeshare.view.utils.MapStateManager
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
@@ -47,8 +48,10 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var mClusterManager: ClusterManager<ClusterMarkerLocation>
-    private var mClickedMarker: ClusterMarkerLocation? = null
+    private var mSelectedBikeLockId: String? = null
     private var mLocationPermissionDenied: Boolean = false
+    private var mOptionsMenuDialog: AlertDialog? = null
+    private var mOptionsMenuIsShowing: Boolean = false
 
     private lateinit var mBikeVM: BikeViewModel
     private lateinit var mRideVM: RideViewModel
@@ -56,10 +59,17 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+        private const val SAVED_OPTIONS_MENU_IS_SHOWING = "savedOptionsMenuIsShowing"
+        private const val SAVED_SELECTED_BIKE_LOCK_ID = "savedSelectedBikeLockId"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (savedInstanceState != null) {
+            mOptionsMenuIsShowing = savedInstanceState.getBoolean(SAVED_OPTIONS_MENU_IS_SHOWING)
+            mSelectedBikeLockId = savedInstanceState.getString(SAVED_SELECTED_BIKE_LOCK_ID)
+        }
 
         activity?.title = getString(R.string.title_bike_map) // Set toolbar title of parent activity
     }
@@ -74,7 +84,7 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
             .commit()
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_ride, container, false)
+        return inflater.inflate(R.layout.fragment_bike_map, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -95,14 +105,49 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
                 finishActivity = true,
                 finishActivityToastText = getString(R.string.permission_required_toast)
             ).show(childFragmentManager, "dialog")
+
+            return
         }
+
+        // Check if device has available internet connection
+        if (!InternetConnectionUtils.isConnected(context!!)) {
+            // Device is not connected to the Internet, display error dialog
+            InfoDialog.newInstance(
+                dialogText = getString(R.string.internet_connection_required_message),
+                finishActivity = true,
+                finishActivityToastText = getString(R.string.internet_connection_required_toast)
+            ).show(childFragmentManager, "dialog")
+        }
+
+        if (mOptionsMenuIsShowing)
+            showOptionsMenu()
     }
 
     override fun onPause() {
         super.onPause()
 
+        mOptionsMenuDialog?.dismiss()
+
         if (::mMap.isInitialized)
             MapStateManager.saveMapState(mMap, context!!)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean(SAVED_OPTIONS_MENU_IS_SHOWING, mOptionsMenuIsShowing)
+        outState.putString(SAVED_SELECTED_BIKE_LOCK_ID, mSelectedBikeLockId)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) return
+
+        if (PermissionUtils.isPermissionGranted(permissions, grantResults, ACCESS_FINE_LOCATION)) {
+            enableLocation()
+        } else {
+            // Set variable to display the missing permission error dialog when this fragment resumes
+            mLocationPermissionDenied = true
+        }
     }
 
     private fun enableLocation() {
@@ -121,12 +166,12 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
              * Access to the location has been granted to the app.
              * Now check if location service is available, and start location on map if it is
              */
-            checkLocation()
+            requestLocation()
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun checkLocation() {
+    private fun requestLocation() {
         val locationRequest = LocationRequest()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         locationRequest.numUpdates = 1 // Only request once
@@ -150,102 +195,40 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun showOptionsMenu() {
-        val optionsDialog = AlertDialog.Builder(context).create()
-
-        // Show options menu
-        val bikeOptionsMenu = layoutInflater.inflate(R.layout.menu_bike_options, null)
-        // Show details button
-        bikeOptionsMenu.findViewById<Button>(R.id.show_bike_details_button).setOnClickListener {
-            // Open detail view of bike when 'Show details'-button is clicked
-            startActivity(BikeDetailActivity.newIntent(context!!, mClickedMarker!!.bikeLockId))
-        }
-        // Unlock ride button
-        bikeOptionsMenu.findViewById<Button>(R.id.unlock_ride_button).setOnClickListener {
-            // Mock Bluetooth pairing to unlock bike
-            Toast.makeText(context!!, getString(R.string.pairing_success), Toast.LENGTH_SHORT).show()
-            optionsDialog.cancel()
-            startRideHandling()
-        }
-        optionsDialog.setView(bikeOptionsMenu)
-        optionsDialog.show()
-    }
-
-    private fun startRideHandling() {
-        val bikeShareActivity = (activity as BikeShareActivity)
-
-        // Get current user
-        val userId = bikeShareActivity.mUserPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
-        val user = mUserVM.getById(userId)!!
-
-        val bikeLockId = mClickedMarker!!.bikeLockId
-
-        // Create ride
-        val selectedBike = mBikeVM.getById(bikeLockId)!!
-        val rideId = mRideVM.startRide(
-            selectedBike,
-            user,
-            selectedBike.positionLatitude,
-            selectedBike.positionLongitude,
-            selectedBike.positionAddress
-        )
-
-        // Update bike to occupied
-        mBikeVM.updateAvailability(bikeLockId, inUse = true)
-
-        bikeShareActivity.updateLastRide(rideId)
-        bikeShareActivity.loadRideFragment()
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) return
-
-        if (PermissionUtils.isPermissionGranted(permissions, grantResults, ACCESS_FINE_LOCATION)) {
-            enableLocation()
-        } else {
-            // Set variable to display the missing permission error dialog when this fragment resumes
-            mLocationPermissionDenied = true
-        }
-    }
-
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.setMaxZoomPreference(35.0f)
+        mMap.setMinZoomPreference(MapConstants.minZoomPreference)
+        mMap.setMaxZoomPreference(MapConstants.maxZoomPreference)
 
+        enableLocation()
+
+        // Cluster manager used to group adjacent bikes when it becomes dense on the map
         mClusterManager = ClusterManager(context, mMap)
         val renderer = CustomClusterRenderer(context!!, mMap, mClusterManager)
-        renderer.minClusterSize = 2
+        renderer.minClusterSize = 2 // Cluster has to consist of at least two bikes
         mClusterManager.renderer = renderer
-
-        mMap.setOnCameraIdleListener(mClusterManager)
-        mMap.setOnMarkerClickListener(mClusterManager)
-        mMap.setOnCameraMoveListener(renderer)
-
-        val top = LatLng(55.711809, 12.468891)
-        val bottom = LatLng(55.557473, 12.682431)
-
-        val builder = LatLngBounds.builder()
-
-        builder.include(top)
-        builder.include(bottom)
-
-        val bounds = builder.build()
-
-        mMap.setLatLngBoundsForCameraTarget(bounds)
-        mMap.setMinZoomPreference(11f)
-
         mClusterManager.setOnClusterItemClickListener { marker ->
-            mClickedMarker = marker
+            mSelectedBikeLockId = marker.bikeLockId
 
             // Move camera to clicked marker
             val markerPosition = LatLng(marker.position.latitude, marker.position.longitude)
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerPosition, 18f))
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerPosition, MapConstants.markerZoomLevel))
             showOptionsMenu()
 
             true
         }
 
-        enableLocation()
+        mMap.setOnCameraIdleListener(mClusterManager)
+        mMap.setOnMarkerClickListener(mClusterManager)
+        mMap.setOnCameraMoveListener(renderer)
+
+        // Set bounds on map
+        val builder = LatLngBounds.builder()
+        builder.include(MapConstants.mapBoundsTop)
+        builder.include(MapConstants.mapBoundsBottom)
+
+        val bounds = builder.build()
+        mMap.setLatLngBoundsForCameraTarget(bounds)
 
         // Move to last saved camera location
         val lastPosition = MapStateManager.getSavedMapState(context!!)
@@ -265,7 +248,60 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    class ClusterMarkerLocation(private val coordinate: LatLng, val bikeLockId: String) : ClusterItem {
+    private fun showOptionsMenu() {
+        mOptionsMenuDialog = AlertDialog.Builder(context).create()
+        mOptionsMenuDialog!!.setOnShowListener {
+            mOptionsMenuIsShowing = true
+        }
+        mOptionsMenuDialog!!.setOnDismissListener {
+            mOptionsMenuIsShowing = false
+        }
+
+        // Show options menu
+        val bikeOptionsMenu = layoutInflater.inflate(R.layout.menu_bike_options, null)
+        // Show details button
+        bikeOptionsMenu.findViewById<Button>(R.id.show_bike_details_button).setOnClickListener {
+            // Open detail view of bike when 'Show details'-button is clicked
+            startActivity(BikeDetailActivity.newIntent(context!!, mSelectedBikeLockId!!))
+        }
+        // Unlock ride button
+        bikeOptionsMenu.findViewById<Button>(R.id.unlock_ride_button).setOnClickListener {
+            // Mock Bluetooth pairing to unlock bike
+            Toast.makeText(context!!, getString(R.string.pairing_success), Toast.LENGTH_SHORT).show()
+            mOptionsMenuDialog!!.cancel()
+            startRideHandling()
+        }
+
+        mOptionsMenuDialog!!.setView(bikeOptionsMenu)
+        mOptionsMenuDialog!!.show()
+    }
+
+    private fun startRideHandling() {
+        val bikeShareActivity = (activity as BikeShareActivity)
+
+        // Get current user
+        val user = mUserVM.getById(bikeShareActivity.getUserId()!!)!!
+
+        // Create ride
+        val selectedBike = mBikeVM.getById(mSelectedBikeLockId!!)!!
+        val newRideId = mRideVM.startRide(
+            selectedBike,
+            user,
+            selectedBike.positionLatitude,
+            selectedBike.positionLongitude,
+            selectedBike.positionAddress
+        )
+
+        // Update bike to be in use
+        mBikeVM.updateAvailability(selectedBike.lockId, inUse = true)
+
+        // Navigate to fragment where user can end ride
+        bikeShareActivity.updateLastRide(newRideId)
+        bikeShareActivity.loadRideFragment()
+    }
+
+
+    inner class ClusterMarkerLocation(private val coordinate: LatLng, val bikeLockId: String) : ClusterItem {
         override fun getSnippet(): String {
             return bikeLockId
         }
@@ -327,7 +363,7 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
 
             // Don't render cluster in super dense area if camera is zoomed far in
             if (wouldCluster) {
-                wouldCluster = mCurrentZoomLevel < 18f
+                wouldCluster = mCurrentZoomLevel < MapConstants.markerZoomLevel
             }
 
             return wouldCluster

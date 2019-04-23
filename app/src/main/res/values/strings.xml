@@ -21,6 +21,14 @@
     <string name="location_service_required_toast">Make sure location service is enabled before continuing.</string>
     <string name="location_not_read_message">Location has not yet been read. Please try again.</string>
 
+    <!-- Internet -->
+    <string name="internet_connection_required_message">
+        No available internet connection detected. Make sure it is enabled before continuing.
+    </string>
+    <string name="internet_connection_required_toast">
+        Make sure an internet connection is available before continuing.
+    </string>
+
     <!-- General -->
     <string name="app_name">BikeShare</string>
     <string name="generic_app_quit_text">Quiting…</string>
@@ -62,7 +70,7 @@
     <string name="button_show_bike_details">Show bike details</string>
     <string name="button_start_ride">Unlock to start ride</string>
     <string name="pairing_success">Pairing succeeded. Bike is now unlocked.</string>
-    <string name="title_bike_map">Bike map</string>
+    <string name="title_bike_map">Bikes</string>
     <string name="start_address_label">Start address</string>
     <string name="start_time_label">Start time</string>
     <string name="end_ride_button">End ride</string>
