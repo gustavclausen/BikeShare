@@ -9,30 +9,14 @@ import io.realm.RealmResults
 
 class BikeDao(val realm: Realm) {
 
-    private fun where(): RealmQuery<Bike> {
-        return realm.where(Bike::class.java)
-    }
-
-    fun findAllAsync(): RealmResults<Bike> {
-        return where().findAllAsync()
-    }
-
-    fun findById(lockId: String): Bike? {
-        return where().equalTo(Bike.Fields.LOCK_ID, lockId).findFirst()
-    }
-
-    fun findAllAvailableBikesAsync(): List<Bike> {
-        return where().equalTo(Bike.Fields.IN_USE, false).findAllAsync()
-    }
-
     fun create(
         lockId: String,
         type: String,
         priceHour: Int,
         picture: ByteArray?,
         owner: User,
-        lastKnownPosition: Coordinate,
-        locationAddress: String
+        position: Coordinate,
+        positionAddress: String
     ) {
         realm.executeTransaction { realm ->
             val bike = realm.createObject(Bike::class.java, lockId)
@@ -40,12 +24,23 @@ class BikeDao(val realm: Realm) {
             bike.priceHour = priceHour
             bike.picture = picture
             bike.owner = owner
-            bike.lastKnownPositionLat = lastKnownPosition.lat
-            bike.lastKnownPositionLong = lastKnownPosition.long
-            bike.lastLocationAddress = locationAddress
+            bike.positionLatitude = position.latitude
+            bike.positionLongitude = position.longitude
+            bike.positionAddress = positionAddress
         }
     }
 
+    fun findById(lockId: String): Bike? {
+        return whereQuery().equalTo(Bike.Fields.LOCK_ID, lockId).findFirst()
+    }
+
+    fun findAllAsync(): RealmResults<Bike> {
+        return whereQuery().findAllAsync()
+    }
+
+    fun findAllAvailableBikesAsync(): RealmResults<Bike> {
+        return whereQuery().equalTo(Bike.Fields.IN_USE, false).findAllAsync()
+    }
 
     fun updateAvailability(lockId: String, inUse: Boolean) {
         realm.executeTransaction {
@@ -54,12 +49,16 @@ class BikeDao(val realm: Realm) {
         }
     }
 
-    fun updateLastKnownLocation(lockId: String, lastKnownPosition: Coordinate, lastKnownAddress: String) {
+    fun updatePosition(lockId: String, position: Coordinate, positionAddress: String) {
         realm.executeTransaction {
             val bike = findById(lockId) ?: return@executeTransaction
-            bike.lastKnownPositionLat = lastKnownPosition.lat
-            bike.lastKnownPositionLong = lastKnownPosition.long
-            bike.lastLocationAddress = lastKnownAddress
+            bike.positionLatitude = position.latitude
+            bike.positionLongitude = position.longitude
+            bike.positionAddress = positionAddress
         }
+    }
+
+    private fun whereQuery(): RealmQuery<Bike> {
+        return realm.where(Bike::class.java)
     }
 }

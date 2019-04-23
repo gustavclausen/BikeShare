@@ -21,27 +21,27 @@ class BikesRecyclerAdapter(private val context: Context) :
         val bike = getItem(position)!!
 
         holder.bind(bike)
-        // Open detail view on click
+        // Open detail view of bike on click
         holder.itemView.setOnClickListener {
             context.startActivity(BikeDetailActivity.newIntent(context, bike.lockId))
         }
     }
 
-    fun setBikesList(bikeList: RealmResults<Bike>) = updateData(bikeList)
+    fun setList(bikeList: RealmResults<Bike>) = updateData(bikeList)
 
     inner class BikeHolder(inflater: LayoutInflater, parent: ViewGroup) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_bike, parent, false)) {
 
         internal fun bind(bike: Bike) {
-            val type = itemView.findViewById(R.id.bike_type) as TextView
-            type.text = bike.type
+            val bikeTypeField = itemView.findViewById<TextView>(R.id.bike_type)
+            bikeTypeField.text = bike.type
 
-            val lastLocationAddress = itemView.findViewById(R.id.bike_last_known_address) as TextView
-            lastLocationAddress.text = bike.lastLocationAddress
+            val bikePositionAddressField = itemView.findViewById<TextView>(R.id.bike_position_address)
+            bikePositionAddressField.text = bike.positionAddress
 
-            val inUse = itemView.findViewById(R.id.bike_in_use) as TextView
-            inUse.text = if (bike.inUse) context.getString(R.string.in_use)
-                         else context.getString(R.string.not_in_use)
+            val bikeInUseField = itemView.findViewById<TextView>(R.id.bike_in_use)
+            bikeInUseField.text = if (bike.inUse) context.getString(R.string.in_use)
+                                  else context.getString(R.string.not_in_use)
         }
     }
 }

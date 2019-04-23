@@ -30,10 +30,7 @@ class BikeDetailActivity : SingleFragmentActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            /*
-             * Finishes the activity and navigates the user back
-             * to the activity that started this activity.
-             */
+            // Finishes the activity and navigates the user back to the activity that started this activity
             android.R.id.home -> finish()
         }
 

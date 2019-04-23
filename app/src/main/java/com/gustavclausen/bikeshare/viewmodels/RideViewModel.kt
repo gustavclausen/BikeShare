@@ -16,14 +16,6 @@ class RideViewModel : ViewModel() {
 
     val endedRides = dao.findAllEndedRidesAsync()
 
-    fun getById(id: String): Ride? {
-        return dao.findById(id)
-    }
-
-    fun getAllRidesForBike(bikeLockId: String): RealmResults<Ride> {
-        return dao.findAllEndedRidesForBikeAsync(bikeLockId)
-    }
-
     /**
      * Create to start ride
      *
@@ -32,25 +24,33 @@ class RideViewModel : ViewModel() {
     fun startRide(
         bike: Bike,
         rider: User,
-        startPositionLat: Double,
-        startPositionLong: Double,
+        startPositionLatitude: Double,
+        startPositionLongitude: Double,
         startPositionAddress: String,
         startTime: Date = Date()
     ): String {
-        return dao.create(bike, rider, startPositionLat, startPositionLong, startPositionAddress, startTime)
+        return dao.create(bike, rider, startPositionLatitude, startPositionLongitude, startPositionAddress, startTime)
+    }
+
+    fun getById(id: String): Ride? {
+        return dao.findById(id)
+    }
+
+    fun getAllRidesForBike(bikeLockId: String): RealmResults<Ride> {
+        return dao.findAllEndedRidesForBikeAsync(bikeLockId)
     }
 
     // Update to end ride
     fun endRide(
         id: String,
-        endPositionLat: Double,
-        endPositionLong: Double,
+        endPositionLatitude: Double,
+        endPositionLongitude: Double,
         endPositionAddress: String,
         distanceKm: Double,
         finalPrice: Double,
         endTime: Date = Date()
     ) {
-        dao.update(id, endPositionLat, endPositionLong, endPositionAddress, distanceKm, finalPrice, endTime)
+        dao.update(id, endPositionLatitude, endPositionLongitude, endPositionAddress, distanceKm, finalPrice, endTime)
     }
 
     override fun onCleared() {

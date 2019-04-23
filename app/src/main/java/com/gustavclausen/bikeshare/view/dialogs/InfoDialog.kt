@@ -13,31 +13,31 @@ class InfoDialog : DialogFragment() {
     private lateinit var mFinishActivityToastText: String // Text to display in toast if Activity quits
 
     companion object {
-        private const val ARGUMENT_DIALOG_TEXT = "dialogText"
-        private const val ARGUMENT_FINISH_ACTIVITY = "finish"
-        private const val ARGUMENT_FINISH_ACTIVITY_TOAST_TEXT = "finishActivityToastText"
+        private const val ARG_DIALOG_TEXT = "dialogText"
+        private const val ARG_FINISH_ACTIVITY = "finish"
+        private const val ARG_FINISH_ACTIVITY_TOAST_TEXT = "finishActivityToastText"
 
         fun newInstance(
             dialogText: String,
             finishActivity: Boolean = false,
             finishActivityToastText: String = ""
         ): InfoDialog {
-            val arguments = Bundle()
-            arguments.putString(ARGUMENT_DIALOG_TEXT, dialogText)
-            arguments.putBoolean(ARGUMENT_FINISH_ACTIVITY, finishActivity)
-            arguments.putString(ARGUMENT_FINISH_ACTIVITY_TOAST_TEXT, finishActivityToastText)
+            val args = Bundle()
+            args.putString(ARG_DIALOG_TEXT, dialogText)
+            args.putBoolean(ARG_FINISH_ACTIVITY, finishActivity)
+            args.putString(ARG_FINISH_ACTIVITY_TOAST_TEXT, finishActivityToastText)
 
             val dialog = InfoDialog()
-            dialog.arguments = arguments
+            dialog.arguments = args
 
             return dialog
         }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialogText = arguments!!.getString(ARGUMENT_DIALOG_TEXT)
-        mFinishActivityToastText = arguments!!.getString(ARGUMENT_FINISH_ACTIVITY_TOAST_TEXT)
-        mFinishActivity = arguments!!.getBoolean(ARGUMENT_FINISH_ACTIVITY)
+        val dialogText = arguments!!.getString(ARG_DIALOG_TEXT)
+        mFinishActivityToastText = arguments!!.getString(ARG_FINISH_ACTIVITY_TOAST_TEXT)
+        mFinishActivity = arguments!!.getBoolean(ARG_FINISH_ACTIVITY)
 
         return AlertDialog.Builder(activity!!)
                           .setMessage(dialogText)

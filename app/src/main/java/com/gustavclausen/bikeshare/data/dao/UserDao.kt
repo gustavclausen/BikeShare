@@ -7,10 +7,6 @@ import java.util.*
 
 class UserDao(val realm: Realm) {
 
-    private fun where(): RealmQuery<User> {
-        return realm.where(User::class.java)
-    }
-
     /**
      * Returns id of newly created user
      */
@@ -25,8 +21,8 @@ class UserDao(val realm: Realm) {
         return newUserId
     }
 
-    fun findById(id: String): User? {
-        return where().equalTo(User.Fields.ID, id).findFirst()
+    fun findById(userId: String): User? {
+        return whereQuery().equalTo(User.Fields.ID, userId).findFirst()
     }
 
     fun addToBalance(userId: String, amount: Double) {
@@ -41,5 +37,9 @@ class UserDao(val realm: Realm) {
             val user = findById(userId) ?: return@executeTransaction
             user.accountBalance -= amount
         }
+    }
+
+    private fun whereQuery(): RealmQuery<User> {
+        return realm.where(User::class.java)
     }
 }

@@ -8,6 +8,7 @@ import com.gustavclausen.bikeshare.data.entities.Coordinate
 import io.realm.Realm
 
 class BikeViewModel : ViewModel() {
+
     private val realm = Realm.getDefaultInstance()
     private val dao = BikeDao(realm)
 
@@ -24,24 +25,25 @@ class BikeViewModel : ViewModel() {
         priceHour: Int,
         picture: ByteArray?,
         owner: User,
-        lastKnownPosition: Coordinate,
-        locationAddress: String
+        position: Coordinate,
+        positionAddress: String
     ) {
-        dao.create(lockId, type, priceHour, picture, owner, lastKnownPosition, locationAddress)
+        dao.create(lockId, type, priceHour, picture, owner, position, positionAddress)
     }
 
     fun updateAvailability(lockId: String, inUse: Boolean) {
         dao.updateAvailability(lockId, inUse)
     }
 
-    fun updateLastKnownLocation(lockId: String, lastKnownPosition: Coordinate, lastKnownAddress: String) {
-        dao.updateLastKnownLocation(lockId, lastKnownPosition, lastKnownAddress)
+    fun updatePosition(lockId: String, position: Coordinate, positionAddress: String) {
+        dao.updatePosition(lockId, position, positionAddress)
     }
 
     override fun onCleared() {
         super.onCleared()
 
         allBikes.removeAllChangeListeners()
+        availableBikes.removeAllChangeListeners()
         realm.close()
     }
 }

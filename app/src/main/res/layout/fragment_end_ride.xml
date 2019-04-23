@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="16dp">
@@ -18,7 +17,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/start_address_label"
+            android:text="@string/label_start_address"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -42,7 +41,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/start_time_label"
+            android:text="@string/label_start_time"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ride_start_address" />
@@ -66,7 +65,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/end_time_label"
+            android:text="@string/label_end_time"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ride_start_time" />
@@ -100,20 +99,20 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/end_location_label"
+            android:text="@string/label_end_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ride_end_date_button" />
 
         <Button
-            android:id="@+id/pick_end_location_button"
+            android:id="@+id/pick_end_position_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:drawableStart="@drawable/ic_location"
             android:drawablePadding="@dimen/button_icon_padding"
-            android:text="@string/pick_end_location_button_label"
+            android:text="@string/button_pick_end_position"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/end_location_label" />
 
@@ -128,8 +127,8 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/pick_end_location_button"
-            app:layout_constraintTop_toBottomOf="@+id/pick_end_location_button" />
+            app:layout_constraintStart_toStartOf="@+id/pick_end_position_button"
+            app:layout_constraintTop_toBottomOf="@+id/pick_end_position_button" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

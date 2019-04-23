@@ -10,25 +10,6 @@ import java.util.*
 
 class RideDao(val realm: Realm) {
 
-    private fun where(): RealmQuery<Ride> {
-        return realm.where(Ride::class.java)
-    }
-
-    fun findById(id: String): Ride? {
-        return where().equalTo(Ride.Fields.ID, id).findFirst()
-    }
-
-    fun findAllEndedRidesAsync(): RealmResults<Ride> {
-        return where().equalTo(Ride.Fields.IS_ENDED, true).findAllAsync()
-    }
-
-    fun findAllEndedRidesForBikeAsync(bikeLockId: String): RealmResults<Ride> {
-        return where()
-               .equalTo(Ride.Fields.IS_ENDED, true)
-               .contains("${Ride.Fields.BIKE}.${Bike.Fields.LOCK_ID}", bikeLockId)
-               .findAllAsync()
-    }
-
     /**
      * Create to start ride
      *
@@ -37,8 +18,8 @@ class RideDao(val realm: Realm) {
     fun create(
         bike: Bike,
         rider: User,
-        startPositionLat: Double,
-        startPositionLong: Double,
+        startPositionLatitude: Double,
+        startPositionLongitude: Double,
         startPositionAddress: String,
         startTime: Date
     ): String {
@@ -48,8 +29,8 @@ class RideDao(val realm: Realm) {
             val ride = realm.createObject(Ride::class.java, id)
             ride.bike = bike
             ride.rider = rider
-            ride.startPositionLat = startPositionLat
-            ride.startPositionLong = startPositionLong
+            ride.startPositionLatitude = startPositionLatitude
+            ride.startPositionLongitude = startPositionLongitude
             ride.startPositionAddress = startPositionAddress
             ride.startTime = startTime
         }
@@ -57,11 +38,26 @@ class RideDao(val realm: Realm) {
         return id
     }
 
+    fun findById(id: String): Ride? {
+        return whereQuery().equalTo(Ride.Fields.ID, id).findFirst()
+    }
+
+    fun findAllEndedRidesAsync(): RealmResults<Ride> {
+        return whereQuery().equalTo(Ride.Fields.IS_ENDED, true).findAllAsync()
+    }
+
+    fun findAllEndedRidesForBikeAsync(bikeLockId: String): RealmResults<Ride> {
+        return whereQuery()
+            .equalTo(Ride.Fields.IS_ENDED, true)
+            .contains("${Ride.Fields.BIKE}.${Bike.Fields.LOCK_ID}", bikeLockId)
+            .findAllAsync()
+    }
+
     // Update to end ride
     fun update(
         id: String,
-        endPositionLat: Double,
-        endPositionLong: Double,
+        endPositionLatitude: Double,
+        endPositionLongitude: Double,
         endPositionAddress: String,
         distanceKm: Double,
         finalPrice: Double,
@@ -70,12 +66,16 @@ class RideDao(val realm: Realm) {
         realm.executeTransaction {
             val ride = findById(id) ?: return@executeTransaction
             ride.isEnded = true
-            ride.endPositionLat = endPositionLat
-            ride.endPositionLong = endPositionLong
+            ride.endPositionLatitude = endPositionLatitude
+            ride.endPositionLongitude = endPositionLongitude
             ride.endPositionAddress = endPositionAddress
             ride.distanceKm = distanceKm
             ride.finalPrice = finalPrice
             ride.endTime = endTime
         }
+    }
+
+    private fun whereQuery(): RealmQuery<Ride> {
+        return realm.where(Ride::class.java)
     }
 }

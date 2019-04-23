@@ -11,14 +11,16 @@ import android.view.View
 import android.view.ViewGroup
 import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
+import com.gustavclausen.bikeshare.data.entities.User
 import com.gustavclausen.bikeshare.view.activities.RegisterBikeActivity
 import com.gustavclausen.bikeshare.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_account.*
 
 class AccountFragment : Fragment() {
 
-    private lateinit var mUserVM: UserViewModel
+    private var mUser: User? = null
     private lateinit var mUserId: String
+    private lateinit var mUserVM: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +47,12 @@ class AccountFragment : Fragment() {
         add_bike_button.setOnClickListener {
             startActivity(Intent(context, RegisterBikeActivity::class.java))
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        mUser = mUserVM.getById(mUserId)
 
         setUserInfo()
     }
@@ -55,14 +63,11 @@ class AccountFragment : Fragment() {
     }
 
     private fun setUserInfo() {
-        val user = mUserVM.getById(mUserId) ?: return
+        user_full_name_text.text = mUser?.fullName
+        user_account_balance_text.text = getString(R.string.money_amount_text, mUser!!.accountBalance)
 
-        user_full_name_text.text = user.fullName
-        user_account_balance_text.text = getString(R.string.money_amount_text, user.accountBalance)
-
-        val balanceColor = if (user.accountBalance >= 0.0) R.color.colorPositiveBalance
-        else R.color.colorNegativeBalance
-
+        val balanceColor = if (mUser!!.accountBalance >= 0.0) R.color.colorPositiveBalance
+                           else R.color.colorNegativeBalance
         user_account_balance_text.setTextColor(ContextCompat.getColor(context!!, balanceColor))
     }
 }

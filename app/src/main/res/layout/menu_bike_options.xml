@@ -8,14 +8,14 @@
 
     <Button
         android:id="@+id/show_bike_details_button"
-        android:layout_width="225dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/button_show_bike_details" />
 
     <Button
         android:id="@+id/unlock_ride_button"
-        android:layout_width="225dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:drawableStart="@drawable/ic_bluetooth"

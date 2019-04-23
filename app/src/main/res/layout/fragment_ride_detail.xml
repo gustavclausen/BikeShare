@@ -9,12 +9,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/view_bike_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/button_view_bike" />
-
         <LinearLayout
             android:id="@+id/rider_section"
             android:layout_width="match_parent"
@@ -174,5 +168,12 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/view_bike_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/button_view_bike" />
     </LinearLayout>
 </ScrollView>

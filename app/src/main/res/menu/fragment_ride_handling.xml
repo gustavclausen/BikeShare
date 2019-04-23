@@ -5,6 +5,6 @@
     <item
         android:id="@+id/end_ride_button"
         android:icon="@drawable/ic_done"
-        android:title="@string/end_ride_button"
+        android:title="@string/button_end_ride"
         app:showAsAction="withText|ifRoom" />
 </menu>
