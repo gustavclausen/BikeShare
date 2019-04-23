@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.data.entities.Coordinate
+import com.gustavclausen.bikeshare.data.entities.Ride
 import com.gustavclausen.bikeshare.services.FetchAddressIntentService
 import com.gustavclausen.bikeshare.view.activities.BikeShareActivity
 import com.gustavclausen.bikeshare.view.activities.EndPositionPickerActivity
@@ -29,25 +30,25 @@ import java.util.concurrent.TimeUnit
 class EndRideFragment : Fragment() {
 
     private lateinit var mRideId: String
+    private var mEndDateTime = Calendar.getInstance()
+    private var mEndPosition: Coordinate? = null
+    private var mEndPositionAddress: String? = null
+
     private lateinit var mRideVM: RideViewModel
     private lateinit var mBikeVM: BikeViewModel
     private lateinit var mUserVM: UserViewModel
 
-    private var mEndDateTime = Calendar.getInstance()
-    private var mEndLocation: Coordinate? = null
-    private var mEndLocationAddress: String? = null
-
     companion object {
         private const val SAVED_END_DATE_TIME = "savedEndDateTime"
-        private const val SAVED_END_LOCATION  = "savedEndLocation"
-        private const val SAVED_END_LOCATION_ADDRESS  = "savedEndLocationAddress"
-        private const val ARG_RIDE_ID = "com.gustavclausen.bikeshare.arg_handling_ride_id"
+        private const val SAVED_END_POSITION = "savedEndPosition"
+        private const val SAVED_END_POSITION_ADDRESS = "savedEndPositionAddress"
+        private const val ARG_RIDE_ID = "com.gustavclausen.bikeshare.arg_end_ride_ride_id"
 
-        private const val DIALOG_DATE = "DialogDate"
-        private const val DIALOG_TIME = "DialogTime"
+        private const val DIALOG_DATE_TAG = "DialogDate"
+        private const val DIALOG_TIME_TAG = "DialogTime"
         private const val DATE_REQUEST_CODE = 0
         private const val TIME_REQUEST_CODE = 1
-        private const val END_LOCATION_REQUEST_CODE = 2
+        private const val END_POSITION_REQUEST_CODE = 2
 
         fun newInstance(rideId: String): EndRideFragment {
             val args = Bundle()
@@ -64,13 +65,13 @@ class EndRideFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
+        activity?.title = getString(R.string.title_ride) // Set toolbar title of parent activity
+
         if (savedInstanceState != null) {
             mEndDateTime = savedInstanceState.getSerializable(SAVED_END_DATE_TIME) as Calendar
-            mEndLocation = savedInstanceState.getSerializable(SAVED_END_LOCATION) as Coordinate?
-            mEndLocationAddress = savedInstanceState.getString(SAVED_END_LOCATION_ADDRESS)
+            mEndPosition = savedInstanceState.getSerializable(SAVED_END_POSITION) as Coordinate?
+            mEndPositionAddress = savedInstanceState.getString(SAVED_END_POSITION_ADDRESS)
         }
-
-        activity?.title = getString(R.string.title_ride) // Set toolbar title of parent activity
 
         mRideId = arguments!!.getString(ARG_RIDE_ID)
 
@@ -92,21 +93,27 @@ class EndRideFragment : Fragment() {
         ride_start_time.text = DateFormatter.fullTimestamp(ride.startTime)
 
         ride_end_date_button.setOnClickListener {
+            // Show date picker
             val picker: DatePickerFragment = DatePickerFragment.newInstance(mEndDateTime)
             picker.setTargetFragment(this, DATE_REQUEST_CODE)
-            picker.show(fragmentManager, DIALOG_DATE)
+            picker.show(fragmentManager, DIALOG_DATE_TAG)
         }
 
         ride_end_time_button.setOnClickListener {
+            // Show time picker
             val picker: TimePickerFragment = TimePickerFragment.newInstance(mEndDateTime)
             picker.setTargetFragment(this, TIME_REQUEST_CODE)
-            picker.show(fragmentManager, DIALOG_TIME)
+            picker.show(fragmentManager, DIALOG_TIME_TAG)
         }
 
-        pick_end_location_button.setOnClickListener {
+        pick_end_position_button.setOnClickListener {
+            // Open end position picker
             val intent = Intent(context, EndPositionPickerActivity::class.java)
-            intent.putExtra(EndPositionPickerActivity.EXTRA_START_POSITION, Coordinate(ride.startPositionLatitude, ride.startPositionLongitude))
-            startActivityForResult(intent, END_LOCATION_REQUEST_CODE)
+            intent.putExtra(
+                EndPositionPickerActivity.EXTRA_START_POSITION,
+                Coordinate(ride.startPositionLatitude, ride.startPositionLongitude)
+            )
+            startActivityForResult(intent, END_POSITION_REQUEST_CODE)
         }
 
         updateUI()
@@ -121,7 +128,7 @@ class EndRideFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.end_ride_button -> {
-                endRide()
+                submit()
                 true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -133,14 +140,14 @@ class EndRideFragment : Fragment() {
 
         when (requestCode) {
             DATE_REQUEST_CODE -> {
-                mEndDateTime = data!!.getSerializableExtra(DatePickerFragment.EXTRA_DATE) as Calendar
+                mEndDateTime = data!!.getSerializableExtra(DatePickerFragment.EXTRA_CALENDAR) as Calendar
             }
             TIME_REQUEST_CODE -> {
                 mEndDateTime = data!!.getSerializableExtra(TimePickerFragment.EXTRA_TIME) as Calendar
             }
-            END_LOCATION_REQUEST_CODE -> {
-                mEndLocation = data!!.getSerializableExtra(EndPositionPickerActivity.EXTRA_END_POSITION) as Coordinate
-                fetchLocationAddress(mEndLocation!!)
+            END_POSITION_REQUEST_CODE -> {
+                mEndPosition = data!!.getSerializableExtra(EndPositionPickerActivity.EXTRA_END_POSITION) as Coordinate
+                fetchPositionAddress(mEndPosition!!)
             }
         }
 
@@ -151,8 +158,8 @@ class EndRideFragment : Fragment() {
         super.onSaveInstanceState(outState)
 
         outState.putSerializable(SAVED_END_DATE_TIME, mEndDateTime)
-        outState.putSerializable(SAVED_END_LOCATION, mEndLocation)
-        outState.putSerializable(SAVED_END_LOCATION_ADDRESS, mEndLocationAddress)
+        outState.putSerializable(SAVED_END_POSITION, mEndPosition)
+        outState.putSerializable(SAVED_END_POSITION_ADDRESS, mEndPositionAddress)
     }
 
     private fun updateUI() {
@@ -160,15 +167,15 @@ class EndRideFragment : Fragment() {
         ride_end_time_button.text = DateFormatter.hourMinute(mEndDateTime.time)
 
         // Disable location picker button if end location has been selected
-        pick_end_location_button.isEnabled = mEndLocation == null
+        pick_end_position_button.isEnabled = mEndPosition == null
 
-        if (mEndLocationAddress != null) {
+        if (mEndPositionAddress != null) {
             end_location_address.visibility = View.VISIBLE
-            end_location_address.text = mEndLocationAddress
+            end_location_address.text = mEndPositionAddress
         }
     }
 
-    private fun fetchLocationAddress(coordinate: Coordinate) {
+    private fun fetchPositionAddress(coordinate: Coordinate) {
         val intent = Intent(context, FetchAddressIntentService::class.java).apply {
             putExtra(FetchAddressIntentService.Constants.EXTRA_RECEIVER, AddressResultReceiver())
             putExtra(FetchAddressIntentService.Constants.EXTRA_LOCATION_DATA, coordinate)
@@ -177,7 +184,7 @@ class EndRideFragment : Fragment() {
         context?.startService(intent)
     }
 
-    private fun endRide() {
+    private fun submit() {
         val ride = mRideVM.getById(mRideId)!!
 
         // Validate that end date time is after start date time
@@ -187,73 +194,84 @@ class EndRideFragment : Fragment() {
         }
 
         // Validate that end location is selected
-        if (mEndLocation == null) {
+        if (mEndPosition == null) {
             Toast.makeText(context!!, getString(R.string.missing_end_location_error), Toast.LENGTH_SHORT).show()
             return
         }
 
-        val startLocation = Location("start")
-        startLocation.latitude = ride.startPositionLatitude
-        startLocation.longitude = ride.startPositionLongitude
+        val durationHours = calculateDurationInHours(ride.startTime, mEndDateTime.time)
+        val distanceKm = calculateDistanceInKm(ride)
+        val ridePrice = durationHours * ride.bike!!.priceHour.toDouble()
 
-        val endLocation = Location("end")
-        endLocation.latitude = mEndLocation!!.latitude
-        endLocation.longitude = mEndLocation!!.longitude
+        displayPaymentDialog(durationHours, distanceKm, ridePrice)
+    }
 
-        val distanceKm = startLocation.distanceTo(endLocation).toDouble() / 1000
+    private fun calculateDistanceInKm(ride: Ride): Double {
+        val startPosition = Location("gps")
+        startPosition.latitude = ride.startPositionLatitude
+        startPosition.longitude = ride.startPositionLongitude
 
-        val hourDiff = hourDiff(ride.startTime, mEndDateTime.time)
-        val finalPrice = hourDiff * ride.bike!!.priceHour.toDouble()
+        val endPosition = Location("gps")
+        endPosition.latitude = mEndPosition!!.latitude
+        endPosition.longitude = mEndPosition!!.longitude
 
-        // Make payment dialog
-        val paymentDialog = AlertDialog.Builder(context!!).setTitle(R.string.payment_dialog_title)
+        return startPosition.distanceTo(endPosition).toDouble() / 1000
+    }
 
-        val dialogContentView = layoutInflater.inflate(R.layout.dialog_payment, null)
+    private fun calculateDurationInHours(from: Date, to: Date): Double {
+        val secondsDiff = TimeUnit.MILLISECONDS.toSeconds(to.time - from.time)
+        return secondsDiff.toDouble() / 60.0 / 60.0
+    }
 
-        val rideDuration = dialogContentView.findViewById<TextView>(R.id.ride_duration)
-        rideDuration.text = getString(R.string.duration_placeholder_text, getString(R.string.duration_hours_text, hourDiff))
+    private fun displayPaymentDialog(durationHours: Double, distanceKm: Double, ridePrice: Double) {
+        val paymentDialog = AlertDialog.Builder(context!!).setTitle(R.string.title_payment_dialog)
 
-        val rideDistance = dialogContentView.findViewById<TextView>(R.id.ride_distance)
-        rideDistance.text = getString(R.string.distance_placeholder_text, getString(R.string.distance_km_text, distanceKm))
+        val dialogView = layoutInflater.inflate(R.layout.dialog_payment, null)
 
-        val paymentAmount = dialogContentView.findViewById<TextView>(R.id.ride_payment_amount)
-        paymentAmount.text = getString(R.string.payment_amount_placeholder_text, getString(R.string.money_amount_text, finalPrice))
+        val rideDurationField = dialogView.findViewById<TextView>(R.id.ride_duration)
+        rideDurationField.text = getString(R.string.duration_placeholder_text, durationHours)
 
-        paymentDialog.setView(dialogContentView)
+        val rideDistanceField = dialogView.findViewById<TextView>(R.id.ride_distance)
+        rideDistanceField.text = getString(R.string.distance_placeholder_text, distanceKm)
+
+        val paymentAmountField = dialogView.findViewById<TextView>(R.id.ride_payment_amount)
+        paymentAmountField.text = getString(R.string.payment_amount_placeholder_text, ridePrice)
+
         paymentDialog.setPositiveButton(R.string.button_dialog_pay) { _, _ ->
-            // Update states
-            mRideVM.endRide(
-                id = mRideId,
-                endPositionLatitude = mEndLocation!!.latitude,
-                endPositionLongitude = mEndLocation!!.longitude,
-                endPositionAddress = mEndLocationAddress!!,
-                distanceKm = distanceKm,
-                finalPrice = finalPrice,
-                endTime = mEndDateTime.time
-            )
-
-            val bikeLockId = ride.bike!!.lockId
-
-            // Update status of bike
-            mBikeVM.updateAvailability(bikeLockId, inUse = false)
-            mBikeVM.updateLocation(bikeLockId, mEndLocation!!, mEndLocationAddress!!)
-
-            // Update user balance
-            mUserVM.subtractFromBalance(ride.rider!!.id, finalPrice)
-
-            val bikeShareActivity = (activity as BikeShareActivity)
-            bikeShareActivity.updateLastRide(null)
-            bikeShareActivity.loadRideFragment()
+            endRide(distanceKm, ridePrice)
         }
-
+        paymentDialog.setView(dialogView)
         paymentDialog.create()
         paymentDialog.show()
     }
 
-    private fun hourDiff(from: Date, to: Date) : Double {
-        val secondsDiff = TimeUnit.MILLISECONDS.toSeconds(to.time - from.time)
-        return secondsDiff.toDouble() / 60.0 / 60.0
+    private fun endRide(distanceKm: Double, ridePrice: Double) {
+        mRideVM.endRide(
+            id = mRideId,
+            endPositionLatitude = mEndPosition!!.latitude,
+            endPositionLongitude = mEndPosition!!.longitude,
+            endPositionAddress = mEndPositionAddress ?: "N/A",
+            distanceKm = distanceKm,
+            finalPrice = ridePrice,
+            endTime = mEndDateTime.time
+        )
+
+        val ride = mRideVM.getById(mRideId)!!
+        val bikeLockId = ride.bike!!.lockId
+
+        // Update status of bike
+        mBikeVM.updateAvailability(bikeLockId, inUse = false)
+        mBikeVM.updatePosition(bikeLockId, mEndPosition!!, mEndPositionAddress!!)
+
+        // Update user balance
+        mUserVM.subtractFromBalance(ride.rider!!.id, ridePrice)
+
+        // Show user bike map
+        val bikeShareActivity = (activity as BikeShareActivity)
+        bikeShareActivity.updateLastRide(null)
+        bikeShareActivity.loadRideFragment()
     }
+
 
     internal inner class AddressResultReceiver : ResultReceiver(Handler(Looper.getMainLooper())) {
 
@@ -263,7 +281,7 @@ class EndRideFragment : Fragment() {
             if (resultCode == FetchAddressIntentService.Constants.EXTRA_FAILURE_RESULT) {
                 Toast.makeText(context!!, resultMessage, Toast.LENGTH_SHORT).show()
             } else if (resultCode == FetchAddressIntentService.Constants.EXTRA_SUCCESS_RESULT) {
-                mEndLocationAddress = resultMessage
+                mEndPositionAddress = resultMessage
                 updateUI()
             }
         }

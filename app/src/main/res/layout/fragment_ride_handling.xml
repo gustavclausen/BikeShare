@@ -106,7 +106,7 @@
             app:layout_constraintTop_toBottomOf="@+id/ride_end_date_button" />
 
         <Button
-            android:id="@+id/pick_end_location_button"
+            android:id="@+id/pick_end_position_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -128,8 +128,8 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/pick_end_location_button"
-            app:layout_constraintTop_toBottomOf="@+id/pick_end_location_button" />
+            app:layout_constraintStart_toStartOf="@+id/pick_end_position_button"
+            app:layout_constraintTop_toBottomOf="@+id/pick_end_position_button" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

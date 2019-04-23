@@ -15,12 +15,12 @@ import java.util.*
 class DatePickerFragment : DialogFragment() {
 
     companion object {
-        private const val ARG_DATE = "date"
-        const val EXTRA_DATE = "com.gustavclausen.bikeshare.date"
+        private const val ARG_CALENDAR = "calendar"
+        const val EXTRA_CALENDAR = "com.gustavclausen.bikeshare.calendar"
 
         fun newInstance(calendar: Calendar): DatePickerFragment {
             val args = Bundle()
-            args.putSerializable(ARG_DATE, calendar)
+            args.putSerializable(ARG_CALENDAR, calendar)
 
             val fragment = DatePickerFragment()
             fragment.arguments = args
@@ -31,7 +31,7 @@ class DatePickerFragment : DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val calendar = arguments!!.getSerializable(ARG_DATE) as Calendar
+        val calendar = arguments!!.getSerializable(ARG_CALENDAR) as Calendar
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
@@ -43,7 +43,7 @@ class DatePickerFragment : DialogFragment() {
 
         return AlertDialog.Builder(context!!)
             .setView(view)
-            .setTitle(R.string.date_picker_title)
+            .setTitle(R.string.title_date_picker)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 calendar.set(Calendar.YEAR, datePicker.year)
                 calendar.set(Calendar.MONTH, datePicker.month)
@@ -57,7 +57,7 @@ class DatePickerFragment : DialogFragment() {
         if (targetFragment == null) return
 
         val intent = Intent()
-        intent.putExtra(EXTRA_DATE, calendar)
+        intent.putExtra(EXTRA_CALENDAR, calendar)
 
         targetFragment!!.onActivityResult(targetRequestCode, resultCode, intent)
     }

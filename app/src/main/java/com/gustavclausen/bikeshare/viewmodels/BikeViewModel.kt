@@ -35,8 +35,8 @@ class BikeViewModel : ViewModel() {
         dao.updateAvailability(lockId, inUse)
     }
 
-    fun updateLocation(lockId: String, position: Coordinate, positionAddress: String) {
-        dao.updateLocation(lockId, position, positionAddress)
+    fun updatePosition(lockId: String, position: Coordinate, positionAddress: String) {
+        dao.updatePosition(lockId, position, positionAddress)
     }
 
     override fun onCleared() {

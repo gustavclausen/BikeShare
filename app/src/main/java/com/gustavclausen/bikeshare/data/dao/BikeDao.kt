@@ -49,7 +49,7 @@ class BikeDao(val realm: Realm) {
         }
     }
 
-    fun updateLocation(lockId: String, position: Coordinate, positionAddress: String) {
+    fun updatePosition(lockId: String, position: Coordinate, positionAddress: String) {
         realm.executeTransaction {
             val bike = findById(lockId) ?: return@executeTransaction
             bike.positionLatitude = position.latitude

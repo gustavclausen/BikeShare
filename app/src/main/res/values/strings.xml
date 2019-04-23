@@ -74,7 +74,7 @@
     <string name="start_address_label">Start address</string>
     <string name="start_time_label">Start time</string>
     <string name="end_ride_button">End ride</string>
-    <string name="date_picker_title">Pick a date</string>
+    <string name="title_date_picker">Pick a date</string>
     <string name="pick_location_button">Pick location</string>
     <string name="no_end_position_selected">No end position selected. Please select one on the map.</string>
     <string name="end_position_picker_title">Pick end position for ride</string>
@@ -96,11 +96,11 @@
     <string name="button_close">Close</string>
     <string name="date_time_input_error">End time must be after start time</string>
     <string name="missing_end_location_error">Please select an end location</string>
-    <string name="payment_dialog_title">Your ride</string>
+    <string name="title_payment_dialog">Your ride</string>
     <string name="duration_hours_text">%1$.1f hour(s)</string>
-    <string name="duration_placeholder_text">Duration: %1s</string>
-    <string name="distance_placeholder_text">Distance: %1s</string>
-    <string name="payment_amount_placeholder_text">To pay: %1s</string>
+    <string name="duration_placeholder_text">Duration: %1$.1f hour(s)</string>
+    <string name="distance_placeholder_text">Distance: %1$.2f km</string>
+    <string name="payment_amount_placeholder_text">To pay: $ %1$.2f</string>
     <string name="button_dialog_pay">Pay</string>
     <string name="price_out_of_range_message">Price must be between 0 and 99</string>
     <string name="label_price_detail_bike">Price per hour</string>
