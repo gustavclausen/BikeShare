@@ -33,6 +33,12 @@ class EndRideFragment : Fragment() {
     private var mEndDateTime = Calendar.getInstance()
     private var mEndPosition: Coordinate? = null
     private var mEndPositionAddress: String? = null
+    private var mDurationHours: Double = 0.0
+    private var mDistanceKm: Double = 0.0
+    private var mRidePrice: Double = 0.0
+
+    private var mPaymentDialog: AlertDialog? = null
+    private var mPaymentDialogIsShowing: Boolean = false
 
     private lateinit var mRideVM: RideViewModel
     private lateinit var mBikeVM: BikeViewModel
@@ -42,6 +48,10 @@ class EndRideFragment : Fragment() {
         private const val SAVED_END_DATE_TIME = "savedEndDateTime"
         private const val SAVED_END_POSITION = "savedEndPosition"
         private const val SAVED_END_POSITION_ADDRESS = "savedEndPositionAddress"
+        private const val SAVED_DURATION_HOURS = "savedDurationHours"
+        private const val SAVED_DISTANCE_KM = "savedDistanceKm"
+        private const val SAVED_RIDE_PRICE = "savedRidePrice"
+        private const val SAVED_PAYMENT_DIALOG_IS_SHOWING = "savedPaymentDialogIsShowing"
         private const val ARG_RIDE_ID = "com.gustavclausen.bikeshare.arg_end_ride_ride_id"
 
         private const val DIALOG_DATE_TAG = "DialogDate"
@@ -71,6 +81,10 @@ class EndRideFragment : Fragment() {
             mEndDateTime = savedInstanceState.getSerializable(SAVED_END_DATE_TIME) as Calendar
             mEndPosition = savedInstanceState.getSerializable(SAVED_END_POSITION) as Coordinate?
             mEndPositionAddress = savedInstanceState.getString(SAVED_END_POSITION_ADDRESS)
+            mDurationHours = savedInstanceState.getDouble(SAVED_DURATION_HOURS)
+            mDistanceKm = savedInstanceState.getDouble(SAVED_DISTANCE_KM)
+            mRidePrice = savedInstanceState.getDouble(SAVED_RIDE_PRICE)
+            mPaymentDialogIsShowing = savedInstanceState.getBoolean(SAVED_PAYMENT_DIALOG_IS_SHOWING)
         }
 
         mRideId = arguments!!.getString(ARG_RIDE_ID)
@@ -119,6 +133,20 @@ class EndRideFragment : Fragment() {
         updateUI()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (mPaymentDialogIsShowing) {
+            displayPaymentDialog()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        mPaymentDialog?.dismiss()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
 
@@ -160,6 +188,10 @@ class EndRideFragment : Fragment() {
         outState.putSerializable(SAVED_END_DATE_TIME, mEndDateTime)
         outState.putSerializable(SAVED_END_POSITION, mEndPosition)
         outState.putSerializable(SAVED_END_POSITION_ADDRESS, mEndPositionAddress)
+        outState.putBoolean(SAVED_PAYMENT_DIALOG_IS_SHOWING, mPaymentDialogIsShowing)
+        outState.putDouble(SAVED_DURATION_HOURS, mDurationHours)
+        outState.putDouble(SAVED_DISTANCE_KM, mDistanceKm)
+        outState.putDouble(SAVED_RIDE_PRICE, mRidePrice)
     }
 
     private fun updateUI() {
@@ -199,11 +231,11 @@ class EndRideFragment : Fragment() {
             return
         }
 
-        val durationHours = calculateDurationInHours(ride.startTime, mEndDateTime.time)
-        val distanceKm = calculateDistanceInKm(ride)
-        val ridePrice = durationHours * ride.bike!!.priceHour.toDouble()
+        mDurationHours = calculateDurationInHours(ride.startTime, mEndDateTime.time)
+        mDistanceKm = calculateDistanceInKm(ride)
+        mRidePrice = mDurationHours * ride.bike!!.priceHour.toDouble()
 
-        displayPaymentDialog(durationHours, distanceKm, ridePrice)
+        displayPaymentDialog()
     }
 
     private fun calculateDistanceInKm(ride: Ride): Double {
@@ -223,36 +255,42 @@ class EndRideFragment : Fragment() {
         return secondsDiff.toDouble() / 60.0 / 60.0
     }
 
-    private fun displayPaymentDialog(durationHours: Double, distanceKm: Double, ridePrice: Double) {
-        val paymentDialog = AlertDialog.Builder(context!!).setTitle(R.string.title_payment_dialog)
+    private fun displayPaymentDialog() {
+        val paymentDialogBuilder = AlertDialog.Builder(context!!).setTitle(R.string.title_payment_dialog)
+        paymentDialogBuilder.setPositiveButton(R.string.button_dialog_pay) { _, _ ->
+            endRide()
+        }
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_payment, null)
 
         val rideDurationField = dialogView.findViewById<TextView>(R.id.ride_duration)
-        rideDurationField.text = getString(R.string.duration_placeholder_text, durationHours)
+        rideDurationField.text = getString(R.string.duration_placeholder_text, mDurationHours)
 
         val rideDistanceField = dialogView.findViewById<TextView>(R.id.ride_distance)
-        rideDistanceField.text = getString(R.string.distance_placeholder_text, distanceKm)
+        rideDistanceField.text = getString(R.string.distance_placeholder_text, mDistanceKm)
 
         val paymentAmountField = dialogView.findViewById<TextView>(R.id.ride_payment_amount)
-        paymentAmountField.text = getString(R.string.payment_amount_placeholder_text, ridePrice)
+        paymentAmountField.text = getString(R.string.payment_amount_placeholder_text, mRidePrice)
 
-        paymentDialog.setPositiveButton(R.string.button_dialog_pay) { _, _ ->
-            endRide(distanceKm, ridePrice)
+        mPaymentDialog = paymentDialogBuilder.create()
+        mPaymentDialog!!.setOnShowListener {
+            mPaymentDialogIsShowing = true
         }
-        paymentDialog.setView(dialogView)
-        paymentDialog.create()
-        paymentDialog.show()
+        mPaymentDialog!!.setOnDismissListener {
+            mPaymentDialogIsShowing = false
+        }
+        mPaymentDialog!!.setView(dialogView)
+        mPaymentDialog!!.show()
     }
 
-    private fun endRide(distanceKm: Double, ridePrice: Double) {
+    private fun endRide() {
         mRideVM.endRide(
             id = mRideId,
             endPositionLatitude = mEndPosition!!.latitude,
             endPositionLongitude = mEndPosition!!.longitude,
             endPositionAddress = mEndPositionAddress ?: "N/A",
-            distanceKm = distanceKm,
-            finalPrice = ridePrice,
+            distanceKm = mDistanceKm,
+            finalPrice = mRidePrice,
             endTime = mEndDateTime.time
         )
 
@@ -261,10 +299,10 @@ class EndRideFragment : Fragment() {
 
         // Update status of bike
         mBikeVM.updateAvailability(bikeLockId, inUse = false)
-        mBikeVM.updatePosition(bikeLockId, mEndPosition!!, mEndPositionAddress!!)
+        mBikeVM.updatePosition(bikeLockId, mEndPosition!!, mEndPositionAddress ?: "N/A")
 
         // Update user balance
-        mUserVM.subtractFromBalance(ride.rider!!.id, ridePrice)
+        mUserVM.subtractFromBalance(ride.rider!!.id, mRidePrice)
 
         // Show user bike map
         val bikeShareActivity = (activity as BikeShareActivity)
