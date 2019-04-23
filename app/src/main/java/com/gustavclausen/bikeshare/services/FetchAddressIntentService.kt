@@ -43,15 +43,15 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
 
         val geocoder = Geocoder(this, Locale.getDefault())
 
-        val addresses: List<Address>
+        val nearbyAddresses: List<Address>
 
         try {
-            // Single address
-            addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+            nearbyAddresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
         } catch (ioe: IOException) {
             // Catch network or other I/O problems
             val errorMessage = getString(R.string.fetch_address_service_not_available)
 
+            // Send error result to receiver
             deliverResultToReceiver(Constants.EXTRA_FAILURE_RESULT, errorMessage)
             Log.e(Constants.TAG, errorMessage, ioe)
 
@@ -69,7 +69,7 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
         }
 
         // Handle case where no addresses were found
-        if (addresses.isEmpty()) {
+        if (nearbyAddresses.isEmpty()) {
             val errorMessage = getString(R.string.no_addresses_found_error_message)
 
             deliverResultToReceiver(Constants.EXTRA_FAILURE_RESULT, errorMessage)
@@ -78,10 +78,10 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
             return
         }
 
-        val firstAddress = addresses.first()
+        val firstNearbyAddress = nearbyAddresses.first()
 
         // Fetch the address lines using getAddressLine and join them
-        val addressFragments = with(firstAddress) {
+        val addressFragments = with(firstNearbyAddress) {
             (0..maxAddressLineIndex).map { getAddressLine(it) }
         }
         deliverResultToReceiver(Constants.EXTRA_SUCCESS_RESULT, addressFragments.joinToString(separator = "\n"))
