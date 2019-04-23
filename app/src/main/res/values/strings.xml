@@ -43,6 +43,7 @@
     <string name="no_price_specified_error_message">No price specified.</string>
     <string name="add_balance_button_text">Add to balance</string>
     <string name="money_amount_text">$ %1$.2f</string>
+    <string name="total_amount_text">Total: $ %1$.2f</string>
     <string name="rides_section_label">Rides</string>
     <string name="bikes_section_label">Bikes</string>
     <string name="add_bike_button_text">Add bike</string>
@@ -94,4 +95,5 @@
     <string name="payment_amount_placeholder_text">To pay: %1s</string>
     <string name="button_dialog_pay">Pay</string>
     <string name="price_out_of_range_message">Price must be between 0 and 99</string>
+    <string name="label_price_detail_bike">Price per hour</string>
 </resources>
