@@ -10,9 +10,9 @@ open class Bike : RealmObject() {
     var lockId: String = "" // Identifies a bike
     @Required
     var type: String = ""
-    var lastKnownPositionLat: Double = 0.0
-    var lastKnownPositionLong: Double = 0.0
-    var lastLocationAddress: String = ""
+    var positionLatitude: Double = 0.0
+    var positionLongitude: Double = 0.0
+    var positionAddress: String = ""
     var picture: ByteArray? = null
     var priceHour: Int = 0
     var owner: User? = null

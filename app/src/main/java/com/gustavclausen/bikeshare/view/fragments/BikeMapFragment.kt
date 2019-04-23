@@ -185,9 +185,9 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
         val rideId = mRideVM.startRide(
             selectedBike,
             user,
-            selectedBike.lastKnownPositionLat,
-            selectedBike.lastKnownPositionLong,
-            selectedBike.lastLocationAddress
+            selectedBike.positionLatitude,
+            selectedBike.positionLongitude,
+            selectedBike.positionAddress
         )
 
         // Update bike to occupied
@@ -258,7 +258,7 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
     private fun markAvailableBikes() {
         mBikeVM.availableBikes.forEach { bike ->
             val bikeMarker = ClusterMarkerLocation(
-                LatLng(bike.lastKnownPositionLat, bike.lastKnownPositionLong),
+                LatLng(bike.positionLatitude, bike.positionLongitude),
                 bike.lockId
             )
             mClusterManager.addItem(bikeMarker)

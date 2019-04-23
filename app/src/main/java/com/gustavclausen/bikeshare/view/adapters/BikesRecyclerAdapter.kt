@@ -37,7 +37,7 @@ class BikesRecyclerAdapter(private val context: Context) :
             type.text = bike.type
 
             val lastLocationAddress = itemView.findViewById(R.id.bike_last_known_address) as TextView
-            lastLocationAddress.text = bike.lastLocationAddress
+            lastLocationAddress.text = bike.positionAddress
 
             val inUse = itemView.findViewById(R.id.bike_in_use) as TextView
             inUse.text = if (bike.inUse) context.getString(R.string.in_use)

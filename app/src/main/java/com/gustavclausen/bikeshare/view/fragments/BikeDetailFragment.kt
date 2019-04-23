@@ -17,7 +17,6 @@ import com.gustavclausen.bikeshare.view.adapters.RidesRecyclerAdapter
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
 import kotlinx.android.synthetic.main.fragment_bike_detail.*
-import kotlinx.android.synthetic.main.fragment_payment_overview.*
 
 // TODO: Fix rotation bug in terms of dialogs for rides and payments
 class BikeDetailFragment : Fragment() {
@@ -67,7 +66,7 @@ class BikeDetailFragment : Fragment() {
         bike_type.text = bike.type
         bike_price.text = bike.priceHour.toString()
         bike_availability.text = if (bike.inUse) getString(R.string.in_use) else getString(R.string.not_in_use)
-        ride_end_address.text = bike.lastLocationAddress
+        ride_end_address.text = bike.positionAddress
         bike_owner_name.text = bike.owner?.fullName
         bike_lock_id.text = bike.lockId
 

@@ -11,12 +11,12 @@ open class Ride : RealmObject() {
     var id: String = ""
     var bike: Bike? = null
     var rider: User? = null
-    var startPositionLat: Double = 0.0
-    var startPositionLong: Double = 0.0
+    var startPositionLatitude: Double = 0.0
+    var startPositionLongitude: Double = 0.0
     var startPositionAddress: String = ""
     var startTime: Date = Date()
-    var endPositionLat: Double = 0.0
-    var endPositionLong: Double = 0.0
+    var endPositionLatitude: Double = 0.0
+    var endPositionLongitude: Double = 0.0
     var endPositionAddress: String = ""
     var endTime: Date = Date()
     var isEnded: Boolean = false

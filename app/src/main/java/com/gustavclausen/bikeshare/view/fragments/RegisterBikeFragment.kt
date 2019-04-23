@@ -345,8 +345,8 @@ class RegisterBikeFragment : Fragment() {
                     priceHour = price_input.text.toString().toInt(),
                     picture = mBikePhoto,
                     owner = user,
-                    lastKnownPosition = mLocation!!,
-                    locationAddress = mLocationAddress!!
+                    position = mLocation!!,
+                    positionAddress = mLocationAddress!!
                 )
 
                 activity?.finish() // Close activity after submission

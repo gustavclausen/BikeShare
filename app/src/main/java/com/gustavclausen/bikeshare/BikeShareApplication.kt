@@ -1,7 +1,6 @@
 package com.gustavclausen.bikeshare
 
 import android.app.Application
-import com.gustavclausen.bikeshare.data.DatabaseInitTransaction
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
@@ -22,7 +21,6 @@ class BikeShareApplication : Application() {
             RealmConfiguration.Builder()
                 .name("bikeshare.realm")
                 .deleteRealmIfMigrationNeeded()
-                .initialData(DatabaseInitTransaction())
                 .build()
         )
     }

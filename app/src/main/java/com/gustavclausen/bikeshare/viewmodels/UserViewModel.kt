@@ -25,7 +25,7 @@ class UserViewModel : ViewModel() {
         dao.addToBalance(userId, amount)
     }
 
-    fun substractFromBalance(userId: String, amount: Double) {
+    fun subtractFromBalance(userId: String, amount: Double) {
         dao.subtractFromBalance(userId, amount)
     }
 

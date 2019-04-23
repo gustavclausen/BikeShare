@@ -79,7 +79,7 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMa
         mMap.setOnMapClickListener(this)
 
         mapMarkers()
-        val start = LatLng(mStartLocation.lat, mStartLocation.long)
+        val start = LatLng(mStartLocation.latitude, mStartLocation.longitude)
         mMap.addMarker(MarkerOptions().position(start))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 15f))
     }
@@ -94,11 +94,11 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMa
     private fun mapMarkers() {
         mMap.clear()
         // Mark start location
-        mMap.addMarker(MarkerOptions().position(LatLng(mStartLocation.lat, mStartLocation.long)))
+        mMap.addMarker(MarkerOptions().position(LatLng(mStartLocation.latitude, mStartLocation.longitude)))
 
         // Mark end location if set
         if (mEndLocationMarker != null) {
-            mMap.addMarker(MarkerOptions().position(LatLng(mEndLocationMarker!!.lat, mEndLocationMarker!!.long)))
+            mMap.addMarker(MarkerOptions().position(LatLng(mEndLocationMarker!!.latitude, mEndLocationMarker!!.longitude)))
         }
     }
 

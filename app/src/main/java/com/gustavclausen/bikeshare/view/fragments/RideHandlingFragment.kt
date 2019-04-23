@@ -23,9 +23,6 @@ import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
 import com.gustavclausen.bikeshare.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_ride_handling.*
-import java.math.BigDecimal
-import java.math.RoundingMode
-import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -108,7 +105,7 @@ class RideHandlingFragment : Fragment() {
 
         pick_end_location_button.setOnClickListener {
             val intent = Intent(context, LocationPickerActivity::class.java)
-            intent.putExtra(LocationPickerActivity.ARG_START_LOCATION, Coordinate(ride.startPositionLat, ride.startPositionLong))
+            intent.putExtra(LocationPickerActivity.ARG_START_LOCATION, Coordinate(ride.startPositionLatitude, ride.startPositionLongitude))
             startActivityForResult(intent, END_LOCATION_REQUEST_CODE)
         }
 
@@ -196,12 +193,12 @@ class RideHandlingFragment : Fragment() {
         }
 
         val startLocation = Location("start")
-        startLocation.latitude = ride.startPositionLat
-        startLocation.longitude = ride.startPositionLong
+        startLocation.latitude = ride.startPositionLatitude
+        startLocation.longitude = ride.startPositionLongitude
 
         val endLocation = Location("end")
-        endLocation.latitude = mEndLocation!!.lat
-        endLocation.longitude = mEndLocation!!.long
+        endLocation.latitude = mEndLocation!!.latitude
+        endLocation.longitude = mEndLocation!!.longitude
 
         val distanceKm = startLocation.distanceTo(endLocation).toDouble() / 1000
 
@@ -227,8 +224,8 @@ class RideHandlingFragment : Fragment() {
             // Update states
             mRideVM.endRide(
                 id = mRideId,
-                endPositionLat = mEndLocation!!.lat,
-                endPositionLong = mEndLocation!!.long,
+                endPositionLatitude = mEndLocation!!.latitude,
+                endPositionLongitude = mEndLocation!!.longitude,
                 endPositionAddress = mEndLocationAddress!!,
                 distanceKm = distanceKm,
                 finalPrice = finalPrice,
@@ -239,10 +236,10 @@ class RideHandlingFragment : Fragment() {
 
             // Update status of bike
             mBikeVM.updateAvailability(bikeLockId, inUse = false)
-            mBikeVM.updateLastKnownLocation(bikeLockId, mEndLocation!!, mEndLocationAddress!!)
+            mBikeVM.updateLocation(bikeLockId, mEndLocation!!, mEndLocationAddress!!)
 
             // Update user balance
-            mUserVM.substractFromBalance(ride.rider!!.id, finalPrice)
+            mUserVM.subtractFromBalance(ride.rider!!.id, finalPrice)
 
             val bikeShareActivity = (activity as BikeShareActivity)
             bikeShareActivity.updateLastRide(null)

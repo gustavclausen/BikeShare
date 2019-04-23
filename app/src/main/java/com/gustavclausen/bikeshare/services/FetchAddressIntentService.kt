@@ -4,7 +4,6 @@ import android.app.IntentService
 import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
 import android.os.Bundle
 import android.os.ResultReceiver
 import android.util.Log
@@ -48,7 +47,7 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
 
         try {
             // Single address
-            addresses = geocoder.getFromLocation(location.lat, location.long, 1)
+            addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
         } catch (ioe: IOException) {
             // Catch network or other I/O problems
             val errorMessage = getString(R.string.fetch_address_service_not_available)
@@ -62,7 +61,7 @@ class FetchAddressIntentService : IntentService("FetchAddressService") {
             Log.e(
                 Constants.TAG,
                 "Invalid latitude or longitude values:\n" +
-                "Latitude = ${location.lat}, Longitude =  ${location.long}",
+                "Latitude = ${location.latitude}, Longitude =  ${location.longitude}",
                 iae
             )
 
