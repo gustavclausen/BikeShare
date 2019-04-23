@@ -23,7 +23,7 @@ import com.gustavclausen.bikeshare.view.utils.DateFormatter
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
 import com.gustavclausen.bikeshare.viewmodels.UserViewModel
-import kotlinx.android.synthetic.main.fragment_ride_handling.*
+import kotlinx.android.synthetic.main.fragment_end_ride.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -95,7 +95,7 @@ class EndRideFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_ride_handling, container, false)
+        return inflater.inflate(R.layout.fragment_end_ride, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -261,10 +261,10 @@ class EndRideFragment : Fragment() {
             endRide()
         }
 
-        val dialogView = layoutInflater.inflate(R.layout.dialog_payment, null)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_ride_payment, null)
 
         val rideDurationField = dialogView.findViewById<TextView>(R.id.ride_duration)
-        rideDurationField.text = getString(R.string.duration_placeholder_text, mDurationHours)
+        rideDurationField.text = getString(R.string.duration_hours_placeholder_text, mDurationHours)
 
         val rideDistanceField = dialogView.findViewById<TextView>(R.id.ride_distance)
         rideDistanceField.text = getString(R.string.distance_placeholder_text, mDistanceKm)

@@ -4,7 +4,6 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -23,7 +22,6 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
-import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.data.entities.Coordinate
 import com.gustavclausen.bikeshare.services.FetchAddressIntentService
@@ -174,7 +172,7 @@ class RegisterBikeFragment : Fragment() {
         if (!InternetConnectionUtils.isConnected(context!!)) {
             // Device is not connected to the Internet, display error dialog
             InfoDialog.newInstance(
-                dialogText = getString(R.string.internet_connection_required_message),
+                dialogText = getString(R.string.internet_connection_required),
                 finishActivity = true,
                 finishActivityToastText = getString(R.string.internet_connection_required_toast)
             ).show(childFragmentManager, "dialog")

@@ -113,7 +113,7 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
         if (!InternetConnectionUtils.isConnected(context!!)) {
             // Device is not connected to the Internet, display error dialog
             InfoDialog.newInstance(
-                dialogText = getString(R.string.internet_connection_required_message),
+                dialogText = getString(R.string.internet_connection_required),
                 finishActivity = true,
                 finishActivityToastText = getString(R.string.internet_connection_required_toast)
             ).show(childFragmentManager, "dialog")
@@ -267,7 +267,7 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
         // Unlock ride button
         bikeOptionsMenu.findViewById<Button>(R.id.unlock_ride_button).setOnClickListener {
             // Mock Bluetooth pairing to unlock bike
-            Toast.makeText(context!!, getString(R.string.pairing_success), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context!!, getString(R.string.bike_pairing_success), Toast.LENGTH_SHORT).show()
             mOptionsMenuDialog!!.cancel()
             startRideHandling()
         }

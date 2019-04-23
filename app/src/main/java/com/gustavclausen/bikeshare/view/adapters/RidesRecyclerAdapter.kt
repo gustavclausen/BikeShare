@@ -40,7 +40,7 @@ class RidesRecyclerAdapter(private val context: Context) :
             endAddressField.text = ride.endPositionAddress
 
             val distanceField = itemView.findViewById<TextView>(R.id.ride_distance)
-            distanceField.text = context.getString(R.string.distance_km_text, ride.distanceKm)
+            distanceField.text = context.getString(R.string.km_placeholder_text, ride.distanceKm)
         }
     }
 }

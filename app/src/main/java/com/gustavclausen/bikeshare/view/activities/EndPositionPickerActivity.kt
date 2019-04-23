@@ -33,7 +33,7 @@ class EndPositionPickerActivity : AppCompatActivity(), OnMapReadyCallback, Googl
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location_picker)
 
-        title = getString(R.string.end_position_picker_title)
+        title = getString(R.string.title_end_position_picker)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Displays the "back"-button in the action bar
 
         if (savedInstanceState != null) {
