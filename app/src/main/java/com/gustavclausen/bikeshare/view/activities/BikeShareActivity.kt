@@ -12,7 +12,7 @@ import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.view.fragments.AccountFragment
 import com.gustavclausen.bikeshare.view.fragments.OverviewFragment
 import com.gustavclausen.bikeshare.view.fragments.BikeMapFragment
-import com.gustavclausen.bikeshare.view.fragments.RideHandlingFragment
+import com.gustavclausen.bikeshare.view.fragments.EndRideFragment
 import com.gustavclausen.bikeshare.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_bike_share.*
 import org.jetbrains.anko.doAsync
@@ -24,7 +24,7 @@ class BikeShareActivity : AppCompatActivity() {
     // Listener for menu items in bottom navigation bar
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         // Return (i.e. do nothing) if user presses the same navigation item
-        if (bottom_navigation.selectedItemId == item.itemId)
+        if (bottom_navigation_bar.selectedItemId == item.itemId)
             return@OnNavigationItemSelectedListener false
 
         when (item.itemId) {
@@ -60,14 +60,13 @@ class BikeShareActivity : AppCompatActivity() {
         if (savedInstanceState == null)
             loadRideFragment()
 
-        bottom_navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        bottom_navigation_bar.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         loginUser()
     }
 
     private fun loginUser() {
         doAsync {
-            // User account configuration
             val registeredUserId = mUserPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
 
             // Create dummy user account if it is the first time user starts the app
@@ -75,6 +74,7 @@ class BikeShareActivity : AppCompatActivity() {
                 val userVM = ViewModelProviders.of(this@BikeShareActivity).get(UserViewModel::class.java)
                 val newUserId = userVM.create("Frank Castle")
 
+                // Save preferences
                 val editor = mUserPreferences.edit()
                 editor.putString(BikeShareApplication.PREF_USER_ID, newUserId)
                 editor.apply()
@@ -91,11 +91,12 @@ class BikeShareActivity : AppCompatActivity() {
     internal fun loadRideFragment() {
         val lastRideId = mUserPreferences.getString(BikeShareApplication.PREF_LAST_RIDE_ID, null)
 
-        // User has not a on-going ride
         if (lastRideId == null) {
+            // User does not have a on-going ride, thus load map with bikes
             loadFragment(BikeMapFragment())
         } else {
-            loadFragment(RideHandlingFragment.newInstance(lastRideId))
+            // If user has on-going ride, load fragment where user can end ride
+            loadFragment(EndRideFragment.newInstance(lastRideId))
         }
     }
 

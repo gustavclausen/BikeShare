@@ -9,7 +9,8 @@ class PermissionUtils {
     companion object {
         fun isPermissionGranted(grantPermissions: Array<String>, grantResults: IntArray, permission: String): Boolean {
             grantPermissions.indices.forEach { i ->
-                if (permission == grantPermissions[i]) return grantResults[i] == PackageManager.PERMISSION_GRANTED
+                if (permission == grantPermissions[i])
+                    return grantResults[i] == PackageManager.PERMISSION_GRANTED
             }
 
             return false

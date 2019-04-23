@@ -11,7 +11,7 @@ import com.gustavclausen.bikeshare.view.fragments.RideDetailFragment
 class RideDetailActivity : SingleFragmentActivity() {
 
     companion object {
-        private const val EXTRA_RIDE_ID = "com.gustavclausen.bikeshare.detail_ride_id"
+        private const val EXTRA_RIDE_ID = "com.gustavclausen.bikeshare.ride_detail_ride_id"
 
         fun newIntent(packageContext: Context, rideId: String): Intent {
             val intent = Intent(packageContext, RideDetailActivity::class.java)
@@ -30,10 +30,7 @@ class RideDetailActivity : SingleFragmentActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            /*
-             * Finishes the activity and navigates the user back
-             * to the activity that started this activity.
-             */
+            // Finishes the activity and navigates the user back to the activity that started this activity
             android.R.id.home -> finish()
         }
 

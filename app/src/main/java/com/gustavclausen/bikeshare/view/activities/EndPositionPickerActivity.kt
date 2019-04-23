@@ -16,51 +16,49 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.data.entities.Coordinate
 
-class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
+class EndPositionPickerActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     private lateinit var mMap: GoogleMap
-    private lateinit var mStartLocation: Coordinate
-    private var mEndLocationMarker: Coordinate? = null
+    private lateinit var mStartPosition: Coordinate
+    private var mEndPositionMarker: Coordinate? = null
 
     companion object {
-        const val ARG_START_LOCATION = "com.gustavclausen.bikeshare.picker_start_location"
-        const val EXTRA_END_LOCATION = "com.gustavclausen.bikeshare.picker_end_location"
-        const val SAVED_END_LOCATION_MARKER = "endLocationMarker"
+        const val EXTRA_START_POSITION = "com.gustavclausen.bikeshare.start_position_picker"
+        const val EXTRA_END_POSITION = "com.gustavclausen.bikeshare.end_position_picker"
+
+        const val SAVED_END_POSITION_MARKER = "endPositionMarker"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location_picker)
 
-        title = getString(R.string.location_picker_title)
+        title = getString(R.string.end_position_picker_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Displays the "back"-button in the action bar
 
         if (savedInstanceState != null) {
-            mEndLocationMarker = savedInstanceState.getSerializable(SAVED_END_LOCATION_MARKER) as Coordinate
+            mEndPositionMarker = savedInstanceState.getSerializable(SAVED_END_POSITION_MARKER) as Coordinate?
         }
 
-        mStartLocation = intent.getSerializableExtra(ARG_START_LOCATION) as Coordinate
+        mStartPosition = intent.getSerializableExtra(EXTRA_START_POSITION) as Coordinate
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.activity_location_picker, menu)
+        menuInflater.inflate(R.menu.activity_end_position_picker, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.pick_location_button -> {
-                sendResult()
+                sendEndPosition()
                 true
             }
-            /*
-             * Finishes the activity and navigates the user back
-             * to the activity that started this activity.
-             */
             android.R.id.home -> {
+                // Finishes the activity and navigates the user back to the activity that started this activity
                 finish()
                 true
             }
@@ -71,46 +69,54 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMa
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 
-        outState?.putSerializable(SAVED_END_LOCATION_MARKER, mEndLocationMarker)
+        outState?.putSerializable(SAVED_END_POSITION_MARKER, mEndPositionMarker)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.setOnMapClickListener(this)
 
-        mapMarkers()
-        val start = LatLng(mStartLocation.latitude, mStartLocation.longitude)
-        mMap.addMarker(MarkerOptions().position(start))
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 15f))
+        mapPositionMarkers()
+
+        // Move camera to start position
+        mMap.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(mStartPosition.latitude, mStartPosition.longitude),
+                15f
+            )
+        )
     }
 
     override fun onMapClick(position: LatLng?) {
         position ?: return
 
-        mEndLocationMarker = Coordinate(position.latitude, position.longitude)
-        mapMarkers()
+        mEndPositionMarker = Coordinate(position.latitude, position.longitude)
+        mapPositionMarkers()
     }
 
-    private fun mapMarkers() {
+    private fun mapPositionMarkers() {
         mMap.clear()
+
         // Mark start location
-        mMap.addMarker(MarkerOptions().position(LatLng(mStartLocation.latitude, mStartLocation.longitude)))
+        mMap.addMarker(MarkerOptions().position(LatLng(mStartPosition.latitude, mStartPosition.longitude)))
 
         // Mark end location if set
-        if (mEndLocationMarker != null) {
-            mMap.addMarker(MarkerOptions().position(LatLng(mEndLocationMarker!!.latitude, mEndLocationMarker!!.longitude)))
+        if (mEndPositionMarker != null) {
+            mMap.addMarker(
+                MarkerOptions().position(LatLng(mEndPositionMarker!!.latitude, mEndPositionMarker!!.longitude))
+            )
         }
     }
 
-    private fun sendResult() {
+    private fun sendEndPosition() {
         // User tries to submit without selecting end location on map
-        if (mEndLocationMarker == null) {
-            Toast.makeText(this, getString(R.string.no_location_picked), Toast.LENGTH_SHORT).show()
+        if (mEndPositionMarker == null) {
+            Toast.makeText(this, getString(R.string.no_end_position_selected), Toast.LENGTH_SHORT).show()
             return
         }
 
         val intent = Intent()
-        intent.putExtra(EXTRA_END_LOCATION, mEndLocationMarker)
+        intent.putExtra(EXTRA_END_POSITION, mEndPositionMarker)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }

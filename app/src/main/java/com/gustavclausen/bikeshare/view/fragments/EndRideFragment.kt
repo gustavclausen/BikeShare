@@ -17,7 +17,7 @@ import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.data.entities.Coordinate
 import com.gustavclausen.bikeshare.services.FetchAddressIntentService
 import com.gustavclausen.bikeshare.view.activities.BikeShareActivity
-import com.gustavclausen.bikeshare.view.activities.LocationPickerActivity
+import com.gustavclausen.bikeshare.view.activities.EndPositionPickerActivity
 import com.gustavclausen.bikeshare.view.utils.DateFormatter
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.fragment_ride_handling.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class RideHandlingFragment : Fragment() {
+class EndRideFragment : Fragment() {
 
     private lateinit var mRideId: String
     private lateinit var mRideVM: RideViewModel
@@ -49,11 +49,11 @@ class RideHandlingFragment : Fragment() {
         private const val TIME_REQUEST_CODE = 1
         private const val END_LOCATION_REQUEST_CODE = 2
 
-        fun newInstance(rideId: String): RideHandlingFragment {
+        fun newInstance(rideId: String): EndRideFragment {
             val args = Bundle()
             args.putString(ARG_RIDE_ID, rideId)
 
-            val fragment = RideHandlingFragment()
+            val fragment = EndRideFragment()
             fragment.arguments = args
 
             return fragment
@@ -104,8 +104,8 @@ class RideHandlingFragment : Fragment() {
         }
 
         pick_end_location_button.setOnClickListener {
-            val intent = Intent(context, LocationPickerActivity::class.java)
-            intent.putExtra(LocationPickerActivity.ARG_START_LOCATION, Coordinate(ride.startPositionLatitude, ride.startPositionLongitude))
+            val intent = Intent(context, EndPositionPickerActivity::class.java)
+            intent.putExtra(EndPositionPickerActivity.EXTRA_START_POSITION, Coordinate(ride.startPositionLatitude, ride.startPositionLongitude))
             startActivityForResult(intent, END_LOCATION_REQUEST_CODE)
         }
 
@@ -139,7 +139,7 @@ class RideHandlingFragment : Fragment() {
                 mEndDateTime = data!!.getSerializableExtra(TimePickerFragment.EXTRA_TIME) as Calendar
             }
             END_LOCATION_REQUEST_CODE -> {
-                mEndLocation = data!!.getSerializableExtra(LocationPickerActivity.EXTRA_END_LOCATION) as Coordinate
+                mEndLocation = data!!.getSerializableExtra(EndPositionPickerActivity.EXTRA_END_POSITION) as Coordinate
                 fetchLocationAddress(mEndLocation!!)
             }
         }
