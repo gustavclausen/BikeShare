@@ -43,4 +43,13 @@
         android:id="@+id/ride_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/ride_list_empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/ride_list_empty_view_text"
+        android:textStyle="italic"
+        android:textAlignment="center" />
 </LinearLayout>

@@ -114,4 +114,7 @@
     <string name="title_ride_detail">Ride</string>
     <string name="title_rides_overview">Rides</string>
     <string name="total_amount_text">Total: $ %1$.2f</string>
+    <string name="bike_list_empty_view_text">No bikes found</string>
+    <string name="ride_list_empty_view_text">No rides found</string>
+    <string name="payment_list_empty_view_text">No payments found</string>
 </resources>

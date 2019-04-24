@@ -37,9 +37,16 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/payment_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"/>
 
-        </android.support.v7.widget.RecyclerView>
+        <TextView
+            android:id="@+id/payment_list_empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/payment_list_empty_view_text"
+            android:textStyle="italic"
+            android:textAlignment="center" />
 
         <TextView
             android:id="@+id/payment_total_amount"

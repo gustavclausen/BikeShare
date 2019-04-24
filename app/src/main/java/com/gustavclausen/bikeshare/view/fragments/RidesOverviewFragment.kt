@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gustavclausen.bikeshare.R
+import com.gustavclausen.bikeshare.view.adapters.RecyclerViewEmptyObserver
 import com.gustavclausen.bikeshare.view.adapters.RidesRecyclerAdapter
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
 import kotlinx.android.synthetic.main.fragment_rides_overview.*
@@ -25,7 +26,7 @@ class RidesOverviewFragment : Fragment() {
         mRideAdapter = RidesRecyclerAdapter(context!!, onDeleteEvent = { ride ->
             mRideVM.deleteRide(ride.id)
         })
-        mRideAdapter.setList(mRideVM.endedRides)
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -38,5 +39,9 @@ class RidesOverviewFragment : Fragment() {
         ride_list.layoutManager = LinearLayoutManager(activity)
         ride_list.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         ride_list.adapter = mRideAdapter
+
+        mRideAdapter.setList(mRideVM.endedRides)
+        // Set empty view
+        mRideAdapter.registerAdapterDataObserver(RecyclerViewEmptyObserver(ride_list, ride_list_empty_view))
     }
 }
