@@ -3,12 +3,14 @@ package com.gustavclausen.bikeshare.view.fragments
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.view.adapters.BikesRecyclerAdapter
+import com.gustavclausen.bikeshare.view.adapters.RecyclerViewEmptyObserver
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import kotlinx.android.synthetic.main.fragment_bikes_overview.*
 
@@ -21,8 +23,9 @@ class BikesOverviewFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         mBikeVM = ViewModelProviders.of(this).get(BikeViewModel::class.java)
-        mBikeAdapter = BikesRecyclerAdapter(context!!)
-        mBikeAdapter.setList(mBikeVM.allBikes)
+        mBikeAdapter = BikesRecyclerAdapter(context!!, onDeleteEvent = { bike ->
+            mBikeVM.delete(bike.lockId, context!!)
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -33,6 +36,11 @@ class BikesOverviewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bike_list.layoutManager = LinearLayoutManager(activity)
+        bike_list.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         bike_list.adapter = mBikeAdapter
+
+        mBikeAdapter.setList(mBikeVM.allBikes)
+        // Set empty view
+        mBikeAdapter.registerAdapterDataObserver(RecyclerViewEmptyObserver(bike_list, bike_list_empty_view))
     }
 }

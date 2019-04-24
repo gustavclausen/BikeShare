@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.gustavclausen.bikeshare.R
+import com.gustavclausen.bikeshare.view.adapters.RecyclerViewEmptyObserver
 import com.gustavclausen.bikeshare.view.adapters.RidePaymentRecyclerAdapter
 import com.gustavclausen.bikeshare.view.adapters.RidesRecyclerAdapter
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
@@ -126,12 +127,20 @@ class BikeDetailFragment : Fragment() {
 
         val dialogView = layoutInflater.inflate(R.layout.fragment_rides_overview, mRideListDialog!!.listView)
 
-        val adapter = RidesRecyclerAdapter(context!!)
+        val adapter = RidesRecyclerAdapter(context!!, null)
         adapter.setList(mRideVM.getAllRidesForBike(mBikeLockId))
 
         val listView = dialogView.findViewById<RecyclerView>(R.id.ride_list)
         listView.layoutManager = LinearLayoutManager(context)
         listView.adapter = adapter
+
+        // Set empty view
+        adapter.registerAdapterDataObserver(
+            RecyclerViewEmptyObserver(
+                listView,
+                dialogView.findViewById(R.id.ride_list_empty_view)
+            )
+        )
 
         mRideListDialog!!.setView(dialogView)
         mRideListDialog!!.show()
@@ -153,15 +162,23 @@ class BikeDetailFragment : Fragment() {
             val totalAmountField = dialogView.findViewById<TextView>(R.id.payment_total_amount)
             val totalCalculatedAmount = rides.toList().fold(0.0) { acc, ride -> acc + ride.finalPrice }
 
-            totalAmountField.text = getString(R.string.total_amount_text, totalCalculatedAmount)
+            totalAmountField.text = context?.getString(R.string.total_amount_text, totalCalculatedAmount)
         }
-        
+
         val adapter = RidePaymentRecyclerAdapter(context!!)
         adapter.setList(allRides)
 
         val listView = dialogView.findViewById<RecyclerView>(R.id.payment_list)
         listView.layoutManager = LinearLayoutManager(context)
         listView.adapter = adapter
+
+        // Set empty view
+        adapter.registerAdapterDataObserver(
+            RecyclerViewEmptyObserver(
+                listView,
+                dialogView.findViewById(R.id.payment_list_empty_view)
+            )
+        )
 
         mPaymentListDialog!!.setView(dialogView)
         mPaymentListDialog!!.show()

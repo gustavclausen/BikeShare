@@ -4,6 +4,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -22,12 +23,12 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
+import com.gustavclausen.bikeshare.BikeShareApplication
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.data.entities.Coordinate
 import com.gustavclausen.bikeshare.services.FetchAddressIntentService
 import com.gustavclausen.bikeshare.utils.InternetConnectionUtils
 import com.gustavclausen.bikeshare.utils.PermissionUtils
-import com.gustavclausen.bikeshare.view.activities.BikeShareActivity
 import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.UserViewModel
@@ -320,18 +321,18 @@ class RegisterBikeFragment : Fragment() {
     }
 
     private fun submit() {
-        val price = Integer.parseInt(price_input.text.toString())
+        val priceInput = price_input.text.toString()
 
         when {
             mLockId == null -> {
                 makeToastWithStringRes(R.string.no_lock_id_error_message)
                 return
             }
-            price_input.text.isNullOrBlank() -> {
+            priceInput.isBlank() -> {
                 makeToastWithStringRes(R.string.no_price_specified_error_message)
                 return
             }
-            price < 0 || price > 99 -> {
+            Integer.parseInt(priceInput) !in 0..99 -> {
                 makeToastWithStringRes(R.string.price_out_of_range_message)
                 return
             }
@@ -341,8 +342,12 @@ class RegisterBikeFragment : Fragment() {
             }
         }
 
-        val bikeShareActivity = (activity as BikeShareActivity)
-        val user = mUserVM.getById(bikeShareActivity.getUserId()!!)!!
+        val userPreferences = context!!.getSharedPreferences(
+            BikeShareApplication.PREF_USER_FILE,
+            Context.MODE_PRIVATE
+        )
+        val userId = userPreferences.getString(BikeShareApplication.PREF_USER_ID, null)
+        val user = mUserVM.getById(userId)!!
 
         mBikeVM.create(
             lockId = mLockId.toString(),

@@ -68,42 +68,15 @@
 
         <Button
             android:id="@+id/add_balance_button"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:drawableStart="@drawable/ic_money"
             android:text="@string/button_add_balance" />
-
-        <TextView
-            android:id="@+id/rides_section_label"
-            style="@style/HeaderLabelStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/label_rides_section" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/user_rides_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp" />
-
-        <TextView
-            android:id="@+id/bikes_section_label"
-            style="@style/HeaderLabelStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/label_bikes_section" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/user_bikes_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp" />
 
         <Button
             android:id="@+id/add_bike_button"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:drawableStart="@drawable/ic_add"

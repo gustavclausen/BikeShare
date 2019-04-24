@@ -16,4 +16,13 @@
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-black</item>
     </style>
+
+    <style name="SmallDetailTextStyle">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TableColumnHeaderTextStyle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>
