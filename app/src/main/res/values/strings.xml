@@ -32,7 +32,7 @@
     <!-- General -->
     <string name="app_name">BikeShare</string>
     <string name="bike_pairing_success">Pairing succeeded. Bike is now unlocked.</string>
-    <string name="button_add_balance">Add to balance</string>
+    <string name="button_add_balance">Add money</string>
     <string name="button_add_bike">Add bike</string>
     <string name="button_close">Close</string>
     <string name="button_dialog_pay">Pay</string>
@@ -93,6 +93,14 @@
     <string name="not_in_use">Not in use</string>
     <string name="payment_amount_placeholder_text">To pay: $ %1$.2f</string>
     <string name="price_out_of_range_message">Price must be between 0 and 99</string>
+    <string name="table_header_ride_start_address">Start address</string>
+    <string name="table_header_ride_end_address">End address</string>
+    <string name="table_header_ride_distance">Distance</string>
+    <string name="table_header_bike_type">Type</string>
+    <string name="table_header_bike_position_address">Address</string>
+    <string name="table_header_bike_status">Status</string>
+    <string name="table_header_rider_name">Rider</string>
+    <string name="table_header_payment_amount">Amount</string>
     <string name="title_account">Account</string>
     <string name="title_bike_detail">Bike</string>
     <string name="title_bike_map">Bikes</string>

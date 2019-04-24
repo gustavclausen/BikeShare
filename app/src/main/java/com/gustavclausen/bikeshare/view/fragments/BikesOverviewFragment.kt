@@ -3,6 +3,7 @@ package com.gustavclausen.bikeshare.view.fragments
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +22,9 @@ class BikesOverviewFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         mBikeVM = ViewModelProviders.of(this).get(BikeViewModel::class.java)
-        mBikeAdapter = BikesRecyclerAdapter(context!!)
+        mBikeAdapter = BikesRecyclerAdapter(context!!, onDeleteEvent = { bike ->
+            mBikeVM.delete(bike.lockId, context!!)
+        })
         mBikeAdapter.setList(mBikeVM.allBikes)
     }
 
@@ -33,6 +36,7 @@ class BikesOverviewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bike_list.layoutManager = LinearLayoutManager(activity)
+        bike_list.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         bike_list.adapter = mBikeAdapter
     }
 }

@@ -11,20 +11,14 @@ import com.gustavclausen.bikeshare.view.activities.RideDetailActivity
 import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 
-class RidesRecyclerAdapter(private val context: Context) :
+class RidesRecyclerAdapter(private val context: Context, private val onDeleteEvent: ((Ride) -> Unit)?) :
     RealmRecyclerViewAdapter<Ride, RidesRecyclerAdapter.RideHolder>(null, true) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RideHolder =
         RideHolder(LayoutInflater.from(context), parent)
 
     override fun onBindViewHolder(holder: RideHolder, position: Int) {
-        val ride = getItem(position)!!
-
-        holder.bind(ride)
-        // Open detail view of ride on click
-        holder.itemView.setOnClickListener {
-            context.startActivity(RideDetailActivity.newIntent(context, ride.id))
-        }
+        holder.bind(ride = getItem(position)!!)
     }
 
     fun setList(rideList: RealmResults<Ride>) = updateData(rideList)
@@ -33,6 +27,17 @@ class RidesRecyclerAdapter(private val context: Context) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_ride, parent, false)) {
 
         internal fun bind(ride: Ride) {
+            // Open detail view of ride on click
+            itemView.setOnClickListener {
+                context.startActivity(RideDetailActivity.newIntent(context, ride.id))
+            }
+
+            // Delete ride on long click
+            itemView.setOnLongClickListener {
+                onDeleteEvent?.invoke(ride)
+                true
+            }
+
             val startAddressField = itemView.findViewById<TextView>(R.id.ride_start_address)
             startAddressField.text = ride.startPositionAddress
 

@@ -126,7 +126,7 @@ class BikeDetailFragment : Fragment() {
 
         val dialogView = layoutInflater.inflate(R.layout.fragment_rides_overview, mRideListDialog!!.listView)
 
-        val adapter = RidesRecyclerAdapter(context!!)
+        val adapter = RidesRecyclerAdapter(context!!, null)
         adapter.setList(mRideVM.getAllRidesForBike(mBikeLockId))
 
         val listView = dialogView.findViewById<RecyclerView>(R.id.ride_list)

@@ -53,6 +53,10 @@ class RideViewModel : ViewModel() {
         dao.update(id, endPositionLatitude, endPositionLongitude, endPositionAddress, distanceKm, finalPrice, endTime)
     }
 
+    fun deleteRide(id: String) {
+        dao.delete(id)
+    }
+
     override fun onCleared() {
         super.onCleared()
 

@@ -45,7 +45,7 @@ class RideDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val ride = mRideVM.getById(mRideId)!!
+        val ride = mRideVM.getById(mRideId) ?: return activity!!.supportFragmentManager.popBackStack()
 
         view_bike_button.setOnClickListener {
             // Open detail view of bike

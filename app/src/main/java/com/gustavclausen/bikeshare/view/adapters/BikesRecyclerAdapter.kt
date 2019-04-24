@@ -11,7 +11,7 @@ import com.gustavclausen.bikeshare.data.entities.Bike
 import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 
-class BikesRecyclerAdapter(private val context: Context) :
+class BikesRecyclerAdapter(private val context: Context, private val onDeleteEvent: ((Bike) -> Unit)?) :
     RealmRecyclerViewAdapter<Bike, BikesRecyclerAdapter.BikeHolder>(null, true) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BikeHolder =
@@ -21,10 +21,6 @@ class BikesRecyclerAdapter(private val context: Context) :
         val bike = getItem(position)!!
 
         holder.bind(bike)
-        // Open detail view of bike on click
-        holder.itemView.setOnClickListener {
-            context.startActivity(BikeDetailActivity.newIntent(context, bike.lockId))
-        }
     }
 
     fun setList(bikeList: RealmResults<Bike>) = updateData(bikeList)
@@ -33,6 +29,17 @@ class BikesRecyclerAdapter(private val context: Context) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_bike, parent, false)) {
 
         internal fun bind(bike: Bike) {
+            // Open detail view of bike on click
+            itemView.setOnClickListener {
+                context.startActivity(BikeDetailActivity.newIntent(context, bike.lockId))
+            }
+
+            // Delete bike on long click
+            itemView.setOnLongClickListener {
+                onDeleteEvent?.invoke(bike)
+                true
+            }
+
             val bikeTypeField = itemView.findViewById<TextView>(R.id.bike_type)
             bikeTypeField.text = bike.type
 

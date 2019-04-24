@@ -58,6 +58,12 @@ class BikeDao(val realm: Realm) {
         }
     }
 
+    fun delete(lockId: String) {
+        realm.executeTransaction {
+            whereQuery().equalTo(Bike.Fields.LOCK_ID, lockId).findAll().deleteAllFromRealm()
+        }
+    }
+
     private fun whereQuery(): RealmQuery<Bike> {
         return realm.where(Bike::class.java)
     }
