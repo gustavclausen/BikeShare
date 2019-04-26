@@ -20,7 +20,7 @@ class BikeShareApplication : Application() {
         Realm.setDefaultConfiguration(
             RealmConfiguration.Builder()
                 .name("bikeshare.realm")
-                .deleteRealmIfMigrationNeeded()
+                .assetFile("bikeshare.realm") // Pre-populate DB on first launch
                 .build()
         )
     }
