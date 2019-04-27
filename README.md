@@ -6,6 +6,6 @@ This project is the final assignment in the course, Mobile App Development, taug
 Feel free to use the source code in any way you like 🙏 This project is solely done for demonstration and educational purposes.
 
 ## Screenshots
-![Bike map screenshot](docs/bike-map-screenshot.png)
-![Bike detail screenshot](docs/bike-detail-screenshot.png)
-![End position picker screenshot](docs/end-position-picker-screenshot.png)
+<img src="docs/bike-map-screenshot.png" width="200">
+<img src="docs/bike-detail-screenshot.png" width="200">
+<img src="docs/end-position-picker-screenshot.png" width="200">
