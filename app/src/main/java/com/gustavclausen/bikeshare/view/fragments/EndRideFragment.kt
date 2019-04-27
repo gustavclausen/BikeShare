@@ -17,8 +17,10 @@ import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.data.entities.Coordinate
 import com.gustavclausen.bikeshare.data.entities.Ride
 import com.gustavclausen.bikeshare.services.FetchAddressIntentService
+import com.gustavclausen.bikeshare.utils.InternetConnectionUtils
 import com.gustavclausen.bikeshare.view.activities.BikeShareActivity
 import com.gustavclausen.bikeshare.view.activities.EndPositionPickerActivity
+import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.view.utils.DateFormatter
 import com.gustavclausen.bikeshare.viewmodels.BikeViewModel
 import com.gustavclausen.bikeshare.viewmodels.RideViewModel
@@ -135,6 +137,18 @@ class EndRideFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
+        // Check if device has available internet connection
+        if (!InternetConnectionUtils.isConnected(context!!)) {
+            // Device is not connected to the Internet, display error dialog
+            InfoDialog.newInstance(
+                dialogText = getString(R.string.internet_connection_required),
+                finishActivity = true,
+                finishActivityToastText = getString(R.string.internet_connection_required_toast)
+            ).show(childFragmentManager, "dialog")
+
+            return
+        }
 
         if (mPaymentDialogIsShowing) {
             displayPaymentDialog()

@@ -14,6 +14,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.gustavclausen.bikeshare.R
 import com.gustavclausen.bikeshare.data.entities.Coordinate
+import com.gustavclausen.bikeshare.utils.InternetConnectionUtils
+import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.view.utils.MapConstants
 
 class EndPositionPickerActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
@@ -63,6 +65,22 @@ class EndPositionPickerActivity : AppCompatActivity(), OnMapReadyCallback, Googl
                 true
             }
             else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Check if device has available internet connection
+        if (!InternetConnectionUtils.isConnected(this)) {
+            // Device is not connected to the Internet, display error dialog
+            InfoDialog.newInstance(
+                dialogText = getString(R.string.internet_connection_required),
+                finishActivity = true,
+                finishActivityToastText = getString(R.string.internet_connection_required_toast)
+            ).show(supportFragmentManager, "dialog")
+
+            return
         }
     }
 
