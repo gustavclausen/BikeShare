@@ -17,6 +17,7 @@ import com.gustavclausen.bikeshare.data.entities.Coordinate
 import com.gustavclausen.bikeshare.utils.InternetConnectionUtils
 import com.gustavclausen.bikeshare.view.dialogs.InfoDialog
 import com.gustavclausen.bikeshare.view.utils.MapConstants
+import com.gustavclausen.bikeshare.view.utils.MapStateManager
 
 class EndPositionPickerActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -84,6 +85,13 @@ class EndPositionPickerActivity : AppCompatActivity(), OnMapReadyCallback, Googl
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        if (::mMap.isInitialized)
+            MapStateManager.saveMapState(mMap, this)
+    }
+
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 
@@ -106,13 +114,10 @@ class EndPositionPickerActivity : AppCompatActivity(), OnMapReadyCallback, Googl
 
         mapPositionMarkers()
 
-        // Move camera to start position
-        mMap.moveCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(mStartPosition.latitude, mStartPosition.longitude),
-                15f
-            )
-        )
+        // Move to last saved camera location
+        val lastPosition = MapStateManager.getSavedMapState(this)
+        val update = CameraUpdateFactory.newCameraPosition(lastPosition)
+        mMap.moveCamera(update)
     }
 
     override fun onMapClick(position: LatLng?) {
