@@ -117,6 +117,8 @@ class BikeMapFragment : Fragment(), OnMapReadyCallback {
                 finishActivity = true,
                 finishActivityToastText = getString(R.string.internet_connection_required_toast)
             ).show(childFragmentManager, "dialog")
+
+            return
         }
 
         if (mOptionsMenuIsShowing)

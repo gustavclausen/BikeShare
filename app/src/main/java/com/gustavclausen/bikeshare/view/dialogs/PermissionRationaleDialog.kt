@@ -63,7 +63,9 @@ class PermissionRationaleDialog : DialogFragment() {
         super.onDismiss(dialog)
 
         if (mFinishActivity) {
-            Toast.makeText(activity, mFinishActivityToastText, Toast.LENGTH_SHORT).show()
+            context ?: return
+
+            Toast.makeText(context, mFinishActivityToastText, Toast.LENGTH_SHORT).show()
             activity?.finish()
         }
     }
